@@ -2,7 +2,8 @@ import telebot
 import random
 import requests
 import json
-import sqlite3
+# import sqlite3
+import psycopg2
 import telebot
 from telebot import types
 import os
