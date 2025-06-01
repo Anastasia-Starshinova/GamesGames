@@ -3131,7 +3131,7 @@ def player_actions(message):
                                                   'позже 👀', reply_markup=btn_menu_player)
                             bot.register_next_step_handler(message, player_actions)
                         else:
-                            add_player(username, '-')
+                            add_player(username, None)
                             for game in games:
                                 markup.add(types.KeyboardButton(game))
                             markup.add(types.KeyboardButton('Вернуться в главное меню'))
