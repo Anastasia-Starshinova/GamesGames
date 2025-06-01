@@ -57,8 +57,8 @@ def delete_in_schedule(player, game, text):
     if len(players) != 0:
         players_dict = {}
         for names in players:
-            id_game = names[0]
-            names = names[1].split()
+            id_game = names[-1]
+            names = names[0].split()
             players_dict[id_game] = names
 
         for key in players_dict:
@@ -139,7 +139,7 @@ def copy_game_for_player(name):
     cursor.close()
     conn.close()
 
-    master_id = [elem[0] for elem in masters_id][0]
+    master_id = [elem[-1] for elem in masters_id][0]
 
     conn = psycopg2.connect(DATABASE_URL)
     cursor = conn.cursor()
@@ -1213,7 +1213,7 @@ def announce_game(name, argument):
     cursor.close()
     conn.close()
 
-    masters_id = [elem[0] for elem in result]
+    masters_id = [elem[-1] for elem in result]
     masters_id.sort()
     master_id = masters_id[-1]
 
