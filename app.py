@@ -8,6 +8,7 @@ from telebot import types
 import os
 
 
+conn = sqlite3.connect('database.db', check_same_thread=False)
 groups = []
 days_list = ['понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота', 'воскресенье']
 master_schedule_buttons = ['Название', 'Система', 'Описание', 'Длительность', 'Место проведения', 'День',
@@ -30,7 +31,6 @@ bot = telebot.TeleBot(TOKEN)
 
 # player_functions
 def add_player(name, data):
-    conn = sqlite3.connect('database.db', check_same_thread=False)
     cursor = conn.cursor()
     cursor.execute(
         f'INSERT INTO players (player, game, master) VALUES (?, ?, ?)',
@@ -40,7 +40,6 @@ def add_player(name, data):
 
 
 def delete_in_schedule(player, game, text):
-    conn = sqlite3.connect('database.db', check_same_thread=False)
     cursor = conn.cursor()
     cursor.execute(
         text, (game,))
@@ -55,7 +54,7 @@ def delete_in_schedule(player, game, text):
             players_dict[id_game] = names
 
         for key in players_dict:
-            conn = sqlite3.connect('database.db', check_same_thread=False)
+            
             cursor = conn.cursor()
             cursor.execute(
                 f'SELECT schedule.signed_players FROM schedule WHERE id ={key}')
@@ -93,7 +92,7 @@ def delete_in_schedule(player, game, text):
             else:
                 signed_players = signed_players - count
 
-            conn = sqlite3.connect('database.db', check_same_thread=False)
+            
             cursor = conn.cursor()
             cursor.execute(
                 'UPDATE schedule SET players=?, signed_players=? WHERE id=? ',
@@ -103,7 +102,7 @@ def delete_in_schedule(player, game, text):
 
 
 def delete_player(username):
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         'DELETE FROM players WHERE player=? ', (username,))
@@ -122,7 +121,7 @@ def main_menu_player(message):
 
 
 def copy_game_for_player(name):
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute('SELECT id FROM schedule WHERE title=?', (name, ))
     masters_id = cursor.fetchall()
@@ -130,7 +129,7 @@ def copy_game_for_player(name):
 
     master_id = [elem[0] for elem in masters_id][0]
 
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         f'SELECT master, title, system, description, address, day, time, before_game, count_players, duration, '
@@ -139,7 +138,7 @@ def copy_game_for_player(name):
     result = cursor.fetchall()
     conn.close()
 
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         f'INSERT INTO schedule (master, title, system, description, address, day, time, '
@@ -148,7 +147,7 @@ def copy_game_for_player(name):
     conn.commit()
     conn.close()
 
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         f'DELETE FROM schedule WHERE id = {master_id}')
@@ -157,7 +156,7 @@ def copy_game_for_player(name):
 
 
 def get_data_for_player(name, argument):
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     if argument == 'show_games_one_master':
         cursor.execute(
@@ -201,7 +200,7 @@ def get_data_for_player(name, argument):
         photo = cursor.fetchall()[0][0]
         conn.close()
 
-        conn = sqlite3.connect('database.db', check_same_thread=False)
+        
         cursor = conn.cursor()
         cursor.execute(
             f'SELECT schedule.master, schedule.title, schedule.system, schedule.description, schedule.duration, '
@@ -246,7 +245,7 @@ def get_data_for_player(name, argument):
         masters_id.sort()
         master_id = masters_id[-1]
 
-        conn = sqlite3.connect('database.db', check_same_thread=False)
+        
         cursor = conn.cursor()
         cursor.execute(
             f'SELECT schedule.photo FROM schedule WHERE id=?', (master_id,))
@@ -256,7 +255,7 @@ def get_data_for_player(name, argument):
         answer = []
         if photo != '-':
             answer.append(photo)
-            conn = sqlite3.connect('database.db', check_same_thread=False)
+            
             cursor = conn.cursor()
             cursor.execute(
                 f'SELECT schedule.master, schedule.title, schedule.system, schedule.description, schedule.duration, '
@@ -275,7 +274,7 @@ def get_data_for_player(name, argument):
             return answer
 
         else:
-            conn = sqlite3.connect('database.db', check_same_thread=False)
+            
             cursor = conn.cursor()
             cursor.execute(
                 f'SELECT schedule.master, schedule.title, schedule.system, schedule.description, schedule.duration, '
@@ -306,7 +305,7 @@ def get_data_for_player(name, argument):
 
 
 def unsubscribe(player):
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         'SELECT schedule.id FROM schedule')
@@ -317,14 +316,14 @@ def unsubscribe(player):
     masters_id.sort()
     master_id = masters_id[-1]
 
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         f'SELECT schedule.title FROM schedule WHERE id=?', (master_id,))
     game = cursor.fetchall()[0][0]
     conn.close()
 
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         'DELETE FROM players WHERE game=? ', (game,))
@@ -356,7 +355,7 @@ def checking_players_for_replay(text, username):
 
 
 def notify_master(player, game):
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     data = {}
     cursor.execute(
@@ -365,7 +364,7 @@ def notify_master(player, game):
     conn.close()
 
     data['master'] = master
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         'SELECT schedule.master_name FROM schedule WHERE title=?', (game,))
@@ -378,7 +377,7 @@ def notify_master(player, game):
 
 
 def check_free_places(username, game):
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         'SELECT schedule.signed_players FROM schedule WHERE title=?', (game,))
@@ -386,14 +385,14 @@ def check_free_places(username, game):
     conn.close()
 
     signed_players = signed_players[0][0]
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         'SELECT schedule.count_players FROM schedule WHERE title=?', (game,))
     count_players = cursor.fetchall()[0][0]
     conn.close()
 
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         'SELECT schedule.master FROM schedule WHERE title=?', (game,))
@@ -401,14 +400,14 @@ def check_free_places(username, game):
     conn.close()
 
     if signed_players == '-':
-        conn = sqlite3.connect('database.db', check_same_thread=False)
+        
         cursor = conn.cursor()
         cursor.execute(
             'UPDATE schedule SET signed_players=? WHERE title=?', (1, game,))
         conn.commit()
         conn.close()
 
-        conn = sqlite3.connect('database.db', check_same_thread=False)
+        
         cursor = conn.cursor()
         cursor.execute(
             'UPDATE schedule SET players=? WHERE title=?',
@@ -416,14 +415,14 @@ def check_free_places(username, game):
         conn.commit()
         conn.close()
 
-        conn = sqlite3.connect('database.db', check_same_thread=False)
+        
         cursor = conn.cursor()
         cursor.execute(
             'UPDATE players SET game=? WHERE game=? AND player=?', (game, '-', username))
         conn.commit()
         conn.close()
 
-        conn = sqlite3.connect('database.db', check_same_thread=False)
+        
         cursor = conn.cursor()
         cursor.execute(
             'UPDATE players SET master=? WHERE game=? AND player=?', (master, game, username))
@@ -431,7 +430,7 @@ def check_free_places(username, game):
         conn.close()
         return 'Вы записались на игру'
     else:
-        conn = sqlite3.connect('database.db', check_same_thread=False)
+        
         cursor = conn.cursor()
         cursor.execute(
             'SELECT schedule.players FROM schedule WHERE title=?', (game,))
@@ -443,7 +442,7 @@ def check_free_places(username, game):
             return 'Вы уже записаны на эту игру :)'
 
         elif count_players == '-':
-            conn = sqlite3.connect('database.db', check_same_thread=False)
+            
             cursor = conn.cursor()
             cursor.execute(
                 'UPDATE schedule SET signed_players=? WHERE title=?',
@@ -451,7 +450,7 @@ def check_free_places(username, game):
             conn.commit()
             conn.close()
 
-            conn = sqlite3.connect('database.db', check_same_thread=False)
+            
             cursor = conn.cursor()
             cursor.execute(
                 'UPDATE schedule SET players=? WHERE title=?',
@@ -459,14 +458,14 @@ def check_free_places(username, game):
             conn.commit()
             conn.close()
 
-            conn = sqlite3.connect('database.db', check_same_thread=False)
+            
             cursor = conn.cursor()
             cursor.execute(
                 'UPDATE players SET game=? WHERE game=? AND player=?', (game, '-', username))
             conn.commit()
             conn.close()
 
-            conn = sqlite3.connect('database.db', check_same_thread=False)
+            
             cursor = conn.cursor()
             cursor.execute(
                 'UPDATE players SET master=? WHERE game=? AND player=?', (master, game, username))
@@ -474,7 +473,7 @@ def check_free_places(username, game):
             conn.close()
             return 'Вы записались на игру'
         elif len(count_players) == 1 or len(count_players) == 2:
-            conn = sqlite3.connect('database.db', check_same_thread=False)
+            
             cursor = conn.cursor()
             if int(count_players) == int(signed_players):
                 conn.close()
@@ -486,7 +485,7 @@ def check_free_places(username, game):
                 conn.commit()
                 conn.close()
 
-                conn = sqlite3.connect('database.db', check_same_thread=False)
+                
                 cursor = conn.cursor()
                 cursor.execute(
                     'UPDATE schedule SET players=? WHERE title=?',
@@ -494,14 +493,14 @@ def check_free_places(username, game):
                 conn.commit()
                 conn.close()
 
-                conn = sqlite3.connect('database.db', check_same_thread=False)
+                
                 cursor = conn.cursor()
                 cursor.execute(
                     'UPDATE players SET game=? WHERE game=? AND player=?', (game, '-', username))
                 conn.commit()
                 conn.close()
 
-                conn = sqlite3.connect('database.db', check_same_thread=False)
+                
                 cursor = conn.cursor()
                 cursor.execute(
                     'UPDATE players SET master=? WHERE game=? AND player=?', (master, game, username))
@@ -509,7 +508,7 @@ def check_free_places(username, game):
                 conn.close()
                 return 'Вы записались на игру'
         elif len(count_players) == 3:
-            conn = sqlite3.connect('database.db', check_same_thread=False)
+            
             cursor = conn.cursor()
             if int(signed_players) < int(count_players[-1]):
                 cursor.execute(
@@ -518,7 +517,7 @@ def check_free_places(username, game):
                 conn.commit()
                 conn.close()
 
-                conn = sqlite3.connect('database.db', check_same_thread=False)
+                
                 cursor = conn.cursor()
                 cursor.execute(
                     'UPDATE schedule SET players=? WHERE title=?',
@@ -526,14 +525,14 @@ def check_free_places(username, game):
                 conn.commit()
                 conn.close()
 
-                conn = sqlite3.connect('database.db', check_same_thread=False)
+                
                 cursor = conn.cursor()
                 cursor.execute(
                     'UPDATE players SET game=? WHERE game=? AND player=?', (game, '-', username))
                 conn.commit()
                 conn.close()
 
-                conn = sqlite3.connect('database.db', check_same_thread=False)
+                
                 cursor = conn.cursor()
                 cursor.execute(
                     'UPDATE players SET master=? WHERE game=? AND player=?', (master, game, username))
@@ -544,7 +543,7 @@ def check_free_places(username, game):
                 conn.close()
                 return 0
         elif len(count_players) == 4:
-            conn = sqlite3.connect('database.db', check_same_thread=False)
+            
             cursor = conn.cursor()
             if int(signed_players) < int(count_players[2:]):
                 cursor.execute(
@@ -553,7 +552,7 @@ def check_free_places(username, game):
                 conn.commit()
                 conn.close()
 
-                conn = sqlite3.connect('database.db', check_same_thread=False)
+                
                 cursor = conn.cursor()
                 cursor.execute(
                     'UPDATE schedule SET players=? WHERE title=?',
@@ -561,14 +560,14 @@ def check_free_places(username, game):
                 conn.commit()
                 conn.close()
 
-                conn = sqlite3.connect('database.db', check_same_thread=False)
+                
                 cursor = conn.cursor()
                 cursor.execute(
                     'UPDATE players SET game=? WHERE game=? AND player=?', (game, '-', username))
                 conn.commit()
                 conn.close()
 
-                conn = sqlite3.connect('database.db', check_same_thread=False)
+                
                 cursor = conn.cursor()
                 cursor.execute(
                     'UPDATE players SET master=? WHERE game=? AND player=?', (master, game, username))
@@ -579,7 +578,7 @@ def check_free_places(username, game):
                 conn.close()
                 return 0
         elif len(count_players) == 5:
-            conn = sqlite3.connect('database.db', check_same_thread=False)
+            
             cursor = conn.cursor()
             if int(signed_players) < int(count_players[3:]):
                 cursor.execute(
@@ -588,7 +587,7 @@ def check_free_places(username, game):
                 conn.commit()
                 conn.close()
 
-                conn = sqlite3.connect('database.db', check_same_thread=False)
+                
                 cursor = conn.cursor()
                 cursor.execute(
                     'UPDATE schedule SET players=? WHERE title=?',
@@ -596,14 +595,14 @@ def check_free_places(username, game):
                 conn.commit()
                 conn.close()
 
-                conn = sqlite3.connect('database.db', check_same_thread=False)
+                
                 cursor = conn.cursor()
                 cursor.execute(
                     'UPDATE players SET game=? WHERE game=? AND player=?', (game, '-', username))
                 conn.commit()
                 conn.close()
 
-                conn = sqlite3.connect('database.db', check_same_thread=False)
+                
                 cursor = conn.cursor()
                 cursor.execute(
                     'UPDATE players SET master=? WHERE game=? AND player=?', (master, game, username))
@@ -616,7 +615,7 @@ def check_free_places(username, game):
 
 
 def check_games_player(player):
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM players WHERE player=?', (player, ))
     games = cursor.fetchall()
@@ -631,7 +630,7 @@ def check_games_player(player):
 
     if len(id_games):
         for id_game in id_games:
-            conn = sqlite3.connect('database.db', check_same_thread=False)
+            
             cursor = conn.cursor()
             cursor.execute(
                 'DELETE FROM players WHERE id=? ', (id_game,))
@@ -646,7 +645,7 @@ def btn_back_to_main_menu_player(message):
 
 
 def back_to_main_menu_player(message):
-    result =  main_menu_player(message)
+    result = main_menu_player(message)
     bot.send_message(message.chat.id, text='Выберите, что хотите сделать :)', reply_markup=result)
 
 
@@ -656,7 +655,7 @@ bot_info = bot.get_me()
 
 
 def get_admins():
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         'SELECT administrators.name FROM administrators')
@@ -668,7 +667,7 @@ def get_admins():
 
 
 def add_chats_to_database(link):
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     name = bot.get_chat('@' + link[13:]).title
     id_chat = bot.get_chat('@' + link[13:]).id
@@ -679,7 +678,7 @@ def add_chats_to_database(link):
 
 
 def get_chats(argument, chat):
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     if argument == 'get_name':
         cursor.execute(
@@ -705,7 +704,7 @@ def get_chats(argument, chat):
 
 
 def check_replay_links(data):
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute('SELECT chats_with_games.link FROM chats_with_games')
     links = cursor.fetchall()
@@ -768,7 +767,7 @@ def check_count_players(data):
 
 
 def add_master(name, data, user_id, master_name, master_last_name):
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         f'INSERT INTO schedule (master, day, title, system, description, count_players, duration, time, '
@@ -781,21 +780,21 @@ def add_master(name, data, user_id, master_name, master_last_name):
 
 
 def delete_master(username):
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         'DELETE FROM schedule WHERE master=? ', (username,))
     conn.commit()
     conn.close()
 
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         'DELETE FROM players WHERE master=? ', (username,))
     conn.commit()
     conn.close()
 
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         'DELETE FROM announcements WHERE master=? ', (username,))
@@ -807,7 +806,7 @@ def add_inf_masters(data, key, name):
     count = data.count('\n')
     if count != 0:
         data = data.replace('\n', ' ')
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     all_data = {'title': 'UPDATE schedule SET title=? WHERE id=?',
                 'system': 'UPDATE schedule SET system=? WHERE id=?',
@@ -853,7 +852,7 @@ def back_to_main_menu(message):
 
 
 def copy_game(data, name):
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute('SELECT id FROM schedule WHERE master=?', (name, ))
     masters_id = cursor.fetchall()
@@ -862,7 +861,7 @@ def copy_game(data, name):
     masters_id = [elem[0] for elem in masters_id]
     master_id = masters_id[data]
 
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         f'SELECT master, title, system, description, address, day, time, before_game, count_players, duration, '
@@ -871,7 +870,7 @@ def copy_game(data, name):
     result = cursor.fetchall()
     conn.close()
 
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         f'INSERT INTO schedule (master, title, system, description, address, day, time, '
@@ -880,7 +879,7 @@ def copy_game(data, name):
     conn.commit()
     conn.close()
 
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         f'DELETE FROM schedule WHERE id = {master_id}')
@@ -889,7 +888,7 @@ def copy_game(data, name):
 
 
 def delete_game(name):
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         'SELECT schedule.id FROM schedule WHERE master=?', (name,))
@@ -900,14 +899,14 @@ def delete_game(name):
     masters_id.sort()
     master_id = masters_id[-1]
 
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         'SELECT schedule.title FROM schedule WHERE id=?', (master_id,))
     title = cursor.fetchall()[0][0]
     conn.close()
 
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         'SELECT players.game FROM players WHERE game=?', (title, ))
@@ -915,14 +914,14 @@ def delete_game(name):
     conn.close()
 
     if len(games) != 0:
-        conn = sqlite3.connect('database.db', check_same_thread=False)
+        
         cursor = conn.cursor()
         cursor.execute(
             'DELETE FROM players WHERE game=? ', (title,))
         conn.commit()
         conn.close()
 
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         'DELETE FROM schedule WHERE id=? ', (master_id,))
@@ -931,7 +930,7 @@ def delete_game(name):
 
 
 def check_buttons(name):
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         'SELECT schedule.id FROM schedule WHERE master=?', (name,))
@@ -942,7 +941,7 @@ def check_buttons(name):
     master_id.sort()
     edit = {}
 
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute('SELECT schedule.title, schedule.system, schedule.description, schedule.duration,'
                    'schedule.address, schedule.day, schedule.time, schedule.before_game, schedule.cost, '
@@ -959,7 +958,7 @@ def check_buttons(name):
 
 
 def check_buttons_short(name):
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         'SELECT schedule.id FROM schedule WHERE master=?', (name,))
@@ -970,7 +969,7 @@ def check_buttons_short(name):
     master_id.sort()
     edit = {}
 
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute('SELECT schedule.title, schedule.description, schedule.photo FROM schedule '
                    'WHERE schedule.id=?', (master_id[-1], ))
@@ -1034,7 +1033,7 @@ def master_short_schedule_elements(name):
 
 
 def get_data_for_master(name, argument):
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     if argument == 'show_photo':
         cursor.execute(
@@ -1046,7 +1045,7 @@ def get_data_for_master(name, argument):
         masters_id.sort()
         master_id = masters_id[-1]
 
-        conn = sqlite3.connect('database.db', check_same_thread=False)
+        
         cursor = conn.cursor()
         cursor.execute(
             f'SELECT schedule.photo FROM schedule WHERE id=?', (master_id,))
@@ -1078,7 +1077,7 @@ def get_data_for_master(name, argument):
         masters_id.sort()
         master_id = masters_id[-1]
 
-        conn = sqlite3.connect('database.db', check_same_thread=False)
+        
         cursor = conn.cursor()
         cursor.execute(
             'SELECT schedule.title FROM schedule WHERE id=?', (master_id,))
@@ -1103,7 +1102,7 @@ def get_data_for_master(name, argument):
 
 
 def check_replay_announcements(master, data):
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         f'SELECT announcements.chat_name, announcements.text FROM announcements WHERE master=?', (master, ))
@@ -1116,7 +1115,7 @@ def check_replay_announcements(master, data):
 
 
 def announce_game(name, argument):
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         'SELECT schedule.id FROM schedule WHERE master=?', (name,))
@@ -1127,7 +1126,7 @@ def announce_game(name, argument):
     masters_id.sort()
     master_id = masters_id[-1]
 
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         f'SELECT schedule.master, schedule.title, schedule.system, schedule.description, schedule.duration, '
@@ -1159,7 +1158,7 @@ def announce_game(name, argument):
     len_text = len(text)
 
     if argument == 'announce':
-        conn = sqlite3.connect('database.db', check_same_thread=False)
+        
         cursor = conn.cursor()
         cursor.execute(
             f'INSERT INTO announcements (text, master, chat_name, chat_link, chat_id) VALUES (?, ?, ?, ?, ?)',
@@ -1178,7 +1177,7 @@ def announce_game(name, argument):
 
 
 def get_announce_game(name, chat, id_chat, argument):
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         f'SELECT announcements.text FROM announcements WHERE chat_link=?', ('-',))
@@ -1189,7 +1188,7 @@ def get_announce_game(name, chat, id_chat, argument):
     if check_replay_announcements(name, (chat, announcement)) or argument == 'replay':
         link = get_chats('get_link', chat)
 
-        conn = sqlite3.connect('database.db', check_same_thread=False)
+        
         cursor = conn.cursor()
         cursor.execute(
             f'UPDATE announcements SET chat_name=?, chat_id=?, chat_link=? WHERE chat_name=?',
@@ -1205,7 +1204,7 @@ def get_announce_game(name, chat, id_chat, argument):
 
 
 def delete_announce_game(name):
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute(
         'DELETE FROM announcements WHERE chat_name=? ', ('-',))
@@ -1214,7 +1213,7 @@ def delete_announce_game(name):
 
 
 def check_games_master(master):
-    conn = sqlite3.connect('database.db', check_same_thread=False)
+    
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM schedule WHERE master=?', (master, ))
     games = cursor.fetchall()
@@ -1228,7 +1227,7 @@ def check_games_master(master):
 
     if len(id_games):
         for id_game in id_games:
-            conn = sqlite3.connect('database.db', check_same_thread=False)
+            
             cursor = conn.cursor()
             cursor.execute(
                 'DELETE FROM schedule WHERE id=? ', (id_game,))
