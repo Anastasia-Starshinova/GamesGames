@@ -38,7 +38,7 @@ def add_player(name, data):
     conn = psycopg2.connect(DATABASE_URL)
     cursor = conn.cursor()
     cursor.execute(
-        f'INSERT INTO players (player, game, master) VALUES (?, ?, ?)',
+        f'INSERT INTO players (player, game, master) VALUES (%s, %s, %s)',
         (name, data, data))
     conn.commit()
     cursor.close()
@@ -365,15 +365,11 @@ def checking_players_for_replay(text, username):
     list_names = []
     name = ''
     for i in range(len(text)):
-        print(text[i])
         if text[i] != ',' and text[i] != ' ':
-            print('мы в if')
             name += text[i]
         if i == len(text) - 1:
-            print('мы во втором if')
             list_names.append(name)
         elif text[i] == ',':
-            print('мы в elif')
             list_names.append(name)
             name = ''
 
@@ -840,7 +836,7 @@ def add_master(name, data, user_id, master_name, master_last_name):
     cursor.execute(
         f'INSERT INTO schedule (master, day, title, system, description, count_players, duration, time, '
         f'address, cost, before_game, photo, additionally, signed_players, players, master_id, master_name, '
-        f'master_last_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        f'master_last_name) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
         (name, data, data, data, data, data, data, data, data, data, data, data, data, data, data,
          user_id, master_name, master_last_name))
     conn.commit()
@@ -1257,7 +1253,7 @@ def announce_game(name, argument):
         conn = psycopg2.connect(DATABASE_URL)
         cursor = conn.cursor()
         cursor.execute(
-            f'INSERT INTO announcements (text, master, chat_name, chat_link, chat_id) VALUES (?, ?, ?, ?, ?)',
+            f'INSERT INTO announcements (text, master, chat_name, chat_link, chat_id) VALUES (%s, %s, %s, %s, %s)',
             (text, name, '-', '-', '-'))
         conn.commit()
         cursor.close()
