@@ -4,6 +4,7 @@ import requests
 import json
 # import sqlite3
 import psycopg2
+import urllib.parse
 import telebot
 from telebot import types
 import os
