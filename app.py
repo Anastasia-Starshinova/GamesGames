@@ -3472,4 +3472,5 @@ def show_game_player(message):
             bot.register_next_step_handler(message, show_game_player)
 
 
-bot.polling(none_stop=True)
+# bot.polling(none_stop=True)
+bot.infinity_polling(skip_updates=True)
