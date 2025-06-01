@@ -3149,8 +3149,9 @@ def player_actions(message):
                         else:
                             markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
                             for i in range(len(games)):
-                                btn = types.KeyboardButton('🎲 ' + games[i] + ' 🎲')
-                                markup.add(btn)
+                                if games[i] is not None:
+                                    btn = types.KeyboardButton('🎲 ' + games[i] + ' 🎲')
+                                    markup.add(btn)
                             markup.add(types.KeyboardButton('Вернуться в главное меню'))
                             bot.send_message(message.chat.id,
                                              text='Выберите игру, от участия в которой хотите отписаться :)',
@@ -3166,8 +3167,9 @@ def player_actions(message):
                         else:
                             markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
                             for i in range(len(games)):
-                                btn = types.KeyboardButton('🎲 ' + games[i] + ' 🎲')
-                                markup.add(btn)
+                                if games[i] is not None:
+                                    btn = types.KeyboardButton('🎲 ' + games[i] + ' 🎲')
+                                    markup.add(btn)
                             markup.add(types.KeyboardButton('Вернуться в главное меню'))
                             bot.send_message(message.chat.id,
                                              text='Выберите игру, расписание которой вы хотите посмотреть :)',
@@ -3551,8 +3553,9 @@ def show_game_player(message):
             else:
                 markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
                 for i in range(len(games)):
-                    btn = types.KeyboardButton('🎲 ' + games[i] + ' 🎲')
-                    markup.add(btn)
+                    if games[i] is not None:
+                        btn = types.KeyboardButton('🎲 ' + games[i] + ' 🎲')
+                        markup.add(btn)
                 markup.add(types.KeyboardButton('Вернуться в главное меню'))
                 bot.send_message(message.chat.id, text='Выберите игру, расписание которой хотели бы посмотреть или '
                                                        'вернитесь в главное меню :)\n—\nИли выберите нужную команду '
@@ -3562,8 +3565,9 @@ def show_game_player(message):
         except ConvertionException as e:
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
             for i in range(len(games)):
-                btn = types.KeyboardButton('🎲 ' + games[i] + ' 🎲')
-                markup.add(btn)
+                if games[i] is not None:
+                    btn = types.KeyboardButton('🎲 ' + games[i] + ' 🎲')
+                    markup.add(btn)
             markup.add(types.KeyboardButton('Вернуться в главное меню'))
             bot.send_message(message.chat.id, f'{user_name}, что-то не так 🙃\n{e}', reply_markup=markup)
             bot.register_next_step_handler(message, show_game_player)
