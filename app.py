@@ -412,7 +412,7 @@ def check_free_places(username, game):
     conn.close()
 
     signed_players = signed_players[0][0]
-    
+    conn = psycopg2.connect(DATABASE_URL)
     cursor = conn.cursor()
     cursor.execute(
         'SELECT schedule.count_players FROM schedule WHERE title=%s', (game,))
