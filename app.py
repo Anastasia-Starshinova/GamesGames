@@ -1320,7 +1320,7 @@ def check_games_master(master):
     for game in games:
         schedule = [elem for elem in game if elem != '-']
         if len(schedule) == 5:
-            id_games.append(schedule[0])
+            id_games.append(schedule[-1])
 
     if len(id_games):
         for id_game in id_games:
