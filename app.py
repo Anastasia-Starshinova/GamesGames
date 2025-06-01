@@ -684,7 +684,7 @@ def check_games_player(player):
         schedule = [elem for elem in game if elem != '-']
 
         if len(schedule) == 2:
-            id_games.append(schedule[0])
+            id_games.append(schedule[-1])
 
     if len(id_games):
         for id_game in id_games:
@@ -1213,7 +1213,7 @@ def announce_game(name, argument):
     cursor.close()
     conn.close()
 
-    masters_id = [elem[-1] for elem in result]
+    masters_id = [elem[0] for elem in result]
     masters_id.sort()
     master_id = masters_id[-1]
 
