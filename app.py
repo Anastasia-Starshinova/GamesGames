@@ -713,7 +713,6 @@ def back_to_main_menu_player(message):
 
 # master_functions
 bot_info = bot.get_me()
-# bot.set_webhook()
 
 
 def get_admins():
