@@ -65,7 +65,7 @@ def delete_in_schedule(player, game, text):
             conn = psycopg2.connect(DATABASE_URL)
             cursor = conn.cursor()
             cursor.execute(
-                f'SELECT schedule.signed_players FROM schedule WHERE id ={key}')
+                f'SELECT schedule.signed_players FROM schedule WHERE id ={int(key)}')
             result = cursor.fetchall()
             signed_players = int(result[0][0])
             cursor.close()
@@ -105,7 +105,7 @@ def delete_in_schedule(player, game, text):
             cursor = conn.cursor()
             cursor.execute(
                 'UPDATE schedule SET players=%s, signed_players=%s WHERE id=%s ',
-                (new_text, signed_players, key))
+                (new_text, signed_players, int(key)))
             conn.commit()
             cursor.close()
             conn.close()
@@ -146,7 +146,7 @@ def copy_game_for_player(name):
     cursor.execute(
         f'SELECT master, title, system, description, address, day, time, before_game, count_players, duration, '
         f'cost, additionally, photo, signed_players, players, master_id, master_name, master_last_name  FROM schedule '
-        f'WHERE id = {master_id}')
+        f'WHERE id = {int(master_id)}')
     result = cursor.fetchall()
     cursor.close()
     conn.close()
@@ -164,7 +164,7 @@ def copy_game_for_player(name):
     conn = psycopg2.connect(DATABASE_URL)
     cursor = conn.cursor()
     cursor.execute(
-        f'DELETE FROM schedule WHERE id = {master_id}')
+        f'DELETE FROM schedule WHERE id = {int(master_id)}')
     conn.commit()
     cursor.close()
     conn.close()
@@ -269,7 +269,7 @@ def get_data_for_player(name, argument):
         conn = psycopg2.connect(DATABASE_URL)
         cursor = conn.cursor()
         cursor.execute(
-            f'SELECT schedule.photo FROM schedule WHERE id=%s', (master_id,))
+            f'SELECT schedule.photo FROM schedule WHERE id=%s', (int(master_id),))
         photo = cursor.fetchall()[0][0]
         cursor.close()
         conn.close()
@@ -284,7 +284,7 @@ def get_data_for_player(name, argument):
                 f'schedule.address, schedule.day, schedule.time, schedule.before_game, schedule.cost, '
                 f'schedule.count_players, schedule.signed_players, schedule.players, schedule.additionally '
                 f'FROM schedule WHERE id=%s',
-                (master_id,))
+                (int(master_id),))
             result = cursor.fetchall()[0]
             cursor.close()
             conn.close()
@@ -304,7 +304,7 @@ def get_data_for_player(name, argument):
                 f'schedule.address, schedule.day, schedule.time, schedule.before_game, schedule.cost, '
                 f'schedule.count_players, schedule.signed_players, schedule.players, schedule.additionally '
                 f'FROM schedule WHERE id=%s',
-                (master_id,))
+                (int(master_id),))
             result = cursor.fetchall()[0]
             cursor.close()
             conn.close()
@@ -345,7 +345,7 @@ def unsubscribe(player):
     conn = psycopg2.connect(DATABASE_URL)
     cursor = conn.cursor()
     cursor.execute(
-        f'SELECT schedule.title FROM schedule WHERE id=%s', (master_id,))
+        f'SELECT schedule.title FROM schedule WHERE id=%s', (int(master_id),))
     game = cursor.fetchall()[0][0]
     cursor.close()
     conn.close()
@@ -691,7 +691,7 @@ def check_games_player(player):
             conn = psycopg2.connect(DATABASE_URL)
             cursor = conn.cursor()
             cursor.execute(
-                'DELETE FROM players WHERE id=%s ', (id_game,))
+                'DELETE FROM players WHERE id=%s ', (int(id_game),))
             conn.commit()
             cursor.close()
             conn.close()
@@ -896,7 +896,7 @@ def add_inf_masters(data, key, name):
     masters_id.sort()
     master_id = masters_id[-1]
     text = all_data.get(key)
-    cursor.execute(text, (data, master_id))
+    cursor.execute(text, (data, int(master_id)))
     conn.commit()
     cursor.close()
     conn.close()
@@ -936,7 +936,7 @@ def copy_game(data, name):
     cursor.execute(
         f'SELECT master, title, system, description, address, day, time, before_game, count_players, duration, '
         f'cost, additionally, photo, signed_players, players, master_id, master_name, master_last_name FROM schedule '
-        f'WHERE id = {master_id}')
+        f'WHERE id = {int(master_id)}')
     result = cursor.fetchall()
     cursor.close()
     conn.close()
@@ -954,7 +954,7 @@ def copy_game(data, name):
     conn = psycopg2.connect(DATABASE_URL)
     cursor = conn.cursor()
     cursor.execute(
-        f'DELETE FROM schedule WHERE id = {master_id}')
+        f'DELETE FROM schedule WHERE id = {int(master_id)}')
     conn.commit()
     cursor.close()
     conn.close()
@@ -971,12 +971,12 @@ def delete_game(name):
 
     masters_id = [elem[0] for elem in result]
     masters_id.sort()
-    master_id = masters_id[-1]
+    master_id = int(masters_id[-1])
 
     conn = psycopg2.connect(DATABASE_URL)
     cursor = conn.cursor()
     cursor.execute(
-        'SELECT schedule.title FROM schedule WHERE id=%s', (master_id,))
+        'SELECT schedule.title FROM schedule WHERE id=%s', (int(master_id),))
     title = cursor.fetchall()[0][0]
     cursor.close()
     conn.close()
@@ -1001,7 +1001,7 @@ def delete_game(name):
     conn = psycopg2.connect(DATABASE_URL)
     cursor = conn.cursor()
     cursor.execute(
-        'DELETE FROM schedule WHERE id=%s ', (master_id,))
+        'DELETE FROM schedule WHERE id=%s ', (int(master_id),))
     conn.commit()
     cursor.close()
     conn.close()
@@ -1131,7 +1131,7 @@ def get_data_for_master(name, argument):
         conn = psycopg2.connect(DATABASE_URL)
         cursor = conn.cursor()
         cursor.execute(
-            f'SELECT schedule.photo FROM schedule WHERE id=%s', (master_id,))
+            f'SELECT schedule.photo FROM schedule WHERE id=%s', (int(master_id),))
         photo = cursor.fetchall()[0][0]
         cursor.close()
         conn.close()
@@ -1167,7 +1167,7 @@ def get_data_for_master(name, argument):
         conn = psycopg2.connect(DATABASE_URL)
         cursor = conn.cursor()
         cursor.execute(
-            'SELECT schedule.title FROM schedule WHERE id=%s', (master_id,))
+            'SELECT schedule.title FROM schedule WHERE id=%s', (int(master_id),))
         result = cursor.fetchall()
         cursor.close()
         conn.close()
@@ -1223,7 +1223,7 @@ def announce_game(name, argument):
         f'SELECT schedule.master, schedule.title, schedule.system, schedule.description, schedule.duration, '
         f'schedule.address, schedule.day, schedule.time, schedule.before_game, schedule.cost, '
         f'schedule.count_players, schedule.signed_players, schedule.additionally FROM schedule WHERE id=%s',
-        (master_id,))
+        (int(master_id),))
     last_game = cursor.fetchall()[0]
     cursor.close()
     conn.close()
@@ -1327,7 +1327,7 @@ def check_games_master(master):
             conn = psycopg2.connect(DATABASE_URL)
             cursor = conn.cursor()
             cursor.execute(
-                'DELETE FROM schedule WHERE id=%s ', (id_game,))
+                'DELETE FROM schedule WHERE id=%s ', (int(id_game),))
             conn.commit()
             cursor.close()
             conn.close()
