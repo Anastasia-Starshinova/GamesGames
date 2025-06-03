@@ -8,7 +8,7 @@ import urllib.parse
 import telebot
 from telebot import types
 import os
-from flask import Flask
+from flask import Flask, request
 # from flask import Flask, request
 
 groups = []
@@ -31,9 +31,29 @@ app = Flask(__name__)
 TOKEN = os.getenv("BOT_TOKEN")
 bot = telebot.TeleBot(TOKEN)
 
+
 DATABASE_URL = os.getenv("DATABASE_URL")
 WEBHOOK_PATH = f"/{TOKEN}"
 WEBHOOK_URL = f"https://my-telegram-bot.up.railway.app{WEBHOOK_PATH}"
+
+
+@app.route(WEBHOOK_PATH, methods=['POST'])
+def webhook():
+    json_string = request.get_data().decode('utf-8')
+    update = telebot.types.Update.de_json(json_string)
+    bot.process_new_updates([update])
+    return '', 200
+
+
+# @app.before_request
+@app.before_serving
+def setup_webhook():
+    bot.remove_webhook()
+    bot.set_webhook(url=WEBHOOK_URL)
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
 
 
 # player_functions
@@ -1372,24 +1392,6 @@ def start(message: telebot.types.Message):
                                                        "использовать этот бот :)".format(message.from_user),
                                  reply_markup=markup)
                 bot.register_next_step_handler(message, player_master_chats)
-
-
-@app.route(WEBHOOK_PATH, methods=['POST'])
-def webhook():
-    json_string = request.get_data().decode('utf-8')
-    update = telebot.types.Update.de_json(json_string)
-    bot.process_new_updates([update])
-    return '', 200
-
-
-@app.before_first_request
-def setup_webhook():
-    bot.remove_webhook()
-    bot.set_webhook(url=WEBHOOK_URL)
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
 
 
 @bot.message_handler(commands=['help_me', ])
