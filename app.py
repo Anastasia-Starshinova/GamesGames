@@ -11,6 +11,7 @@ import os
 from flask import Flask, request
 # from flask import Flask, request
 
+random_word = 'kjnl'
 groups = []
 days_list = ['понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота', 'воскресенье']
 master_schedule_buttons = ['Название', 'Система', 'Описание', 'Длительность', 'Место проведения', 'День',
