@@ -1557,7 +1557,8 @@ def throw_d20(message: telebot.types.Message):
                 elif message.text == '/roll_the_dice':
                     roll_the_dice(message)
                 else:
-                    if message.text.isdigit():
+                    answer = message.text.isdigit()
+                    if answer:
                         result = []
                         for i in range(int(message.text)):
                             new_digit = random.randrange(1, 20, 1)
@@ -1566,7 +1567,7 @@ def throw_d20(message: telebot.types.Message):
                         bot.send_message(message.chat.id, f'{user_name}, результат вашего броска\n\n 🎲 {result} 🎲',
                                          reply_markup=markup)
                         bot.register_next_step_handler(message, roll_the_dice)
-                    elif message.text.isalpha() or message.text.isalnum():
+                    elif not answer:
                         raise ConvertionException('Вы не ввели число или ввели его некорректоно :(\nНапишите ниже, '
                                                   '*какое количество кубиков D20* бросить*.\nНапример, 3 :)')
             else:
