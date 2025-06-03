@@ -1549,25 +1549,31 @@ def throw_d20(message: telebot.types.Message):
         user_name = message.from_user.first_name
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
         try:
-            if message.text == '/start':
-                start(message)
-            elif message.text == '/help_me':
-                help_me(message)
-            elif message.text == '/roll_the_dice':
-                roll_the_dice(message)
-            else:
-                if message.text.isdigit():
-                    result = []
-                    for i in range(int(message.text)):
-                        new_digit = random.randrange(1, 20, 1)
-                        result.append(new_digit)
-                    markup.add(types.KeyboardButton('Бросить ещё раз?'))
-                    bot.send_message(message.chat.id, f'{user_name}, результат вашего броска\n\n 🎲 {result} 🎲',
-                                     reply_markup=markup)
-                    bot.register_next_step_handler(message, roll_the_dice)
+            if type(message.text) is str:
+                if message.text == '/start':
+                    start(message)
+                elif message.text == '/help_me':
+                    help_me(message)
+                elif message.text == '/roll_the_dice':
+                    roll_the_dice(message)
                 else:
-                    raise ConvertionException('Вы не ввели число :(\nНапишите ниже, *какое количество кубиков D20* '
-                                              'бросить*.\nНапример, 3 :)')
+                    if message.text.isdigit():
+                        result = []
+                        for i in range(int(message.text)):
+                            new_digit = random.randrange(1, 20, 1)
+                            result.append(new_digit)
+                        markup.add(types.KeyboardButton('Бросить ещё раз?'))
+                        bot.send_message(message.chat.id, f'{user_name}, результат вашего броска\n\n 🎲 {result} 🎲',
+                                         reply_markup=markup)
+                        bot.register_next_step_handler(message, roll_the_dice)
+                    elif message.text.isalpha() or message.text.isalnum():
+                        raise ConvertionException('Вы не ввели число или ввели его некорректоно :(\nНапишите ниже, '
+                                                  '*какое количество кубиков D20* бросить*.\nНапример, 3 :)')
+            else:
+                bot.send_message(message.chat.id, text='Вы не ввели количество кубиков, которое нужно бросить 😔\n'
+                                                       'Напишите ниже, *какое количество кубиков D20* бросить*.\n'
+                                                       'Например, 3 :)'.format(message.from_user))
+                bot.register_next_step_handler(message, throw_d20)
         except ConvertionException as e:
             bot.send_message(message.chat.id, f'{user_name}, что-то не так 🙃\n{e}', parse_mode='Markdown',
                              reply_markup=markup)
@@ -1579,25 +1585,31 @@ def throw_d12(message: telebot.types.Message):
         user_name = message.from_user.first_name
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
         try:
-            if message.text == '/start':
-                start(message)
-            elif message.text == '/help_me':
-                help_me(message)
-            elif message.text == '/roll_the_dice':
-                roll_the_dice(message)
-            else:
-                if message.text.isdigit():
-                    result = []
-                    for i in range(int(message.text)):
-                        new_digit = random.randrange(1, 12, 1)
-                        result.append(new_digit)
-                    markup.add(types.KeyboardButton('Бросить ещё раз?'))
-                    bot.send_message(message.chat.id, f'{user_name}, результат вашего броска\n\n 🎲 {result} 🎲',
-                                     reply_markup=markup)
-                    bot.register_next_step_handler(message, roll_the_dice)
+            if type(message.text) is str:
+                if message.text == '/start':
+                    start(message)
+                elif message.text == '/help_me':
+                    help_me(message)
+                elif message.text == '/roll_the_dice':
+                    roll_the_dice(message)
                 else:
-                    raise ConvertionException('Вы не ввели число :(\nНапишите ниже, *какое количество кубиков D12* '
-                                              'бросить*.\nНапример, 3 :)')
+                    if message.text.isdigit():
+                        result = []
+                        for i in range(int(message.text)):
+                            new_digit = random.randrange(1, 12, 1)
+                            result.append(new_digit)
+                        markup.add(types.KeyboardButton('Бросить ещё раз?'))
+                        bot.send_message(message.chat.id, f'{user_name}, результат вашего броска\n\n 🎲 {result} 🎲',
+                                         reply_markup=markup)
+                        bot.register_next_step_handler(message, roll_the_dice)
+                    else:
+                        raise ConvertionException('Вы не ввели число :(\nНапишите ниже, *какое количество кубиков D12* '
+                                                  'бросить*.\nНапример, 3 :)')
+            else:
+                bot.send_message(message.chat.id, text='Вы не ввели количество кубиков, которое нужно бросить 😔\n'
+                                                       'Напишите ниже, *какое количество кубиков D12* бросить*.\n'
+                                                       'Например, 3 :)'.format(message.from_user))
+                bot.register_next_step_handler(message, throw_d12)
         except ConvertionException as e:
             bot.send_message(message.chat.id, f'{user_name}, что-то не так 🙃\n{e}', reply_markup=markup)
             bot.register_next_step_handler(message, throw_d12)
@@ -1608,25 +1620,31 @@ def throw_d10(message: telebot.types.Message):
         user_name = message.from_user.first_name
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
         try:
-            if message.text == '/start':
-                start(message)
-            elif message.text == '/help_me':
-                help_me(message)
-            elif message.text == '/roll_the_dice':
-                roll_the_dice(message)
-            else:
-                if message.text.isdigit():
-                    result = []
-                    for i in range(int(message.text)):
-                        new_digit = random.randrange(1, 10, 1)
-                        result.append(new_digit)
-                    markup.add(types.KeyboardButton('Бросить ещё раз?'))
-                    bot.send_message(message.chat.id, f'{user_name}, результат вашего броска\n\n 🎲 {result} 🎲',
-                                     reply_markup=markup)
-                    bot.register_next_step_handler(message, roll_the_dice)
+            if type(message.text) is str:
+                if message.text == '/start':
+                    start(message)
+                elif message.text == '/help_me':
+                    help_me(message)
+                elif message.text == '/roll_the_dice':
+                    roll_the_dice(message)
                 else:
-                    raise ConvertionException('Вы не ввели число :(\nНапишите ниже, *какое количество кубиков D10* '
-                                              'бросить*.\nНапример, 3 :)')
+                    if message.text.isdigit():
+                        result = []
+                        for i in range(int(message.text)):
+                            new_digit = random.randrange(1, 10, 1)
+                            result.append(new_digit)
+                        markup.add(types.KeyboardButton('Бросить ещё раз?'))
+                        bot.send_message(message.chat.id, f'{user_name}, результат вашего броска\n\n 🎲 {result} 🎲',
+                                         reply_markup=markup)
+                        bot.register_next_step_handler(message, roll_the_dice)
+                    else:
+                        raise ConvertionException('Вы не ввели число :(\nНапишите ниже, *какое количество кубиков D10* '
+                                                  'бросить*.\nНапример, 3 :)')
+            else:
+                bot.send_message(message.chat.id, text='Вы не ввели количество кубиков, которое нужно бросить 😔\n'
+                                                       'Напишите ниже, *какое количество кубиков D10* бросить*.\n'
+                                                       'Например, 3 :)'.format(message.from_user))
+                bot.register_next_step_handler(message, throw_d10)
         except ConvertionException as e:
             bot.send_message(message.chat.id, f'{user_name}, что-то не так 🙃\n{e}', reply_markup=markup)
             bot.register_next_step_handler(message, throw_d10)
@@ -1637,25 +1655,31 @@ def throw_d8(message: telebot.types.Message):
         user_name = message.from_user.first_name
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
         try:
-            if message.text == '/start':
-                start(message)
-            elif message.text == '/help_me':
-                help_me(message)
-            elif message.text == '/roll_the_dice':
-                roll_the_dice(message)
-            else:
-                if message.text.isdigit():
-                    result = []
-                    for i in range(int(message.text)):
-                        new_digit = random.randrange(1, 8, 1)
-                        result.append(new_digit)
-                    markup.add(types.KeyboardButton('Бросить ещё раз?'))
-                    bot.send_message(message.chat.id, f'{user_name}, результат вашего броска\n\n 🎲 {result} 🎲',
-                                     reply_markup=markup)
-                    bot.register_next_step_handler(message, roll_the_dice)
+            if type(message.text) is str:
+                if message.text == '/start':
+                    start(message)
+                elif message.text == '/help_me':
+                    help_me(message)
+                elif message.text == '/roll_the_dice':
+                    roll_the_dice(message)
                 else:
-                    raise ConvertionException('Вы не ввели число :(\nНапишите ниже, *какое количество кубиков D8* '
-                                              'бросить*.\nНапример, 3 :)')
+                    if message.text.isdigit():
+                        result = []
+                        for i in range(int(message.text)):
+                            new_digit = random.randrange(1, 8, 1)
+                            result.append(new_digit)
+                        markup.add(types.KeyboardButton('Бросить ещё раз?'))
+                        bot.send_message(message.chat.id, f'{user_name}, результат вашего броска\n\n 🎲 {result} 🎲',
+                                         reply_markup=markup)
+                        bot.register_next_step_handler(message, roll_the_dice)
+                    else:
+                        raise ConvertionException('Вы не ввели число :(\nНапишите ниже, *какое количество кубиков D8* '
+                                                  'бросить*.\nНапример, 3 :)')
+            else:
+                bot.send_message(message.chat.id, text='Вы не ввели количество кубиков, которое нужно бросить 😔\n'
+                                                       'Напишите ниже, *какое количество кубиков D8* бросить*.\n'
+                                                       'Например, 3 :)'.format(message.from_user))
+                bot.register_next_step_handler(message, throw_d8)
         except ConvertionException as e:
             bot.send_message(message.chat.id, f'{user_name}, что-то не так 🙃\n{e}', reply_markup=markup)
             bot.register_next_step_handler(message, throw_d8)
@@ -1666,25 +1690,31 @@ def throw_d6(message: telebot.types.Message):
         user_name = message.from_user.first_name
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
         try:
-            if message.text == '/start':
-                start(message)
-            elif message.text == '/help_me':
-                help_me(message)
-            elif message.text == '/roll_the_dice':
-                roll_the_dice(message)
-            else:
-                if message.text.isdigit():
-                    result = []
-                    for i in range(int(message.text)):
-                        new_digit = random.randrange(1, 6, 1)
-                        result.append(new_digit)
-                    markup.add(types.KeyboardButton('Бросить ещё раз?'))
-                    bot.send_message(message.chat.id, f'{user_name}, результат вашего броска\n\n 🎲 {result} 🎲',
-                                     reply_markup=markup)
-                    bot.register_next_step_handler(message, roll_the_dice)
+            if type(message.text) is str:
+                if message.text == '/start':
+                    start(message)
+                elif message.text == '/help_me':
+                    help_me(message)
+                elif message.text == '/roll_the_dice':
+                    roll_the_dice(message)
                 else:
-                    raise ConvertionException('Вы не ввели число :(\nНапишите ниже, *какое количество кубиков D6* '
-                                              'бросить*.\nНапример, 3 :)')
+                    if message.text.isdigit():
+                        result = []
+                        for i in range(int(message.text)):
+                            new_digit = random.randrange(1, 6, 1)
+                            result.append(new_digit)
+                        markup.add(types.KeyboardButton('Бросить ещё раз?'))
+                        bot.send_message(message.chat.id, f'{user_name}, результат вашего броска\n\n 🎲 {result} 🎲',
+                                         reply_markup=markup)
+                        bot.register_next_step_handler(message, roll_the_dice)
+                    else:
+                        raise ConvertionException('Вы не ввели число :(\nНапишите ниже, *какое количество кубиков D6* '
+                                                  'бросить*.\nНапример, 3 :)')
+            else:
+                bot.send_message(message.chat.id, text='Вы не ввели количество кубиков, которое нужно бросить 😔\n'
+                                                       'Напишите ниже, *какое количество кубиков D6* бросить*.\n'
+                                                       'Например, 3 :)'.format(message.from_user))
+                bot.register_next_step_handler(message, throw_d6)
         except ConvertionException as e:
             bot.send_message(message.chat.id, f'{user_name}, что-то не так 🙃\n{e}', reply_markup=markup)
             bot.register_next_step_handler(message, throw_d6)
@@ -1695,25 +1725,31 @@ def throw_d4(message: telebot.types.Message):
         user_name = message.from_user.first_name
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
         try:
-            if message.text == '/start':
-                start(message)
-            elif message.text == '/help_me':
-                help_me(message)
-            elif message.text == '/roll_the_dice':
-                roll_the_dice(message)
-            else:
-                if message.text.isdigit():
-                    result = []
-                    for i in range(int(message.text)):
-                        new_digit = random.randrange(1, 4, 1)
-                        result.append(new_digit)
-                    markup.add(types.KeyboardButton('Бросить ещё раз?'))
-                    bot.send_message(message.chat.id, f'{user_name}, результат вашего броска\n\n 🎲 {result} 🎲',
-                                     reply_markup=markup)
-                    bot.register_next_step_handler(message, roll_the_dice)
+            if type(message.text) is str:
+                if message.text == '/start':
+                    start(message)
+                elif message.text == '/help_me':
+                    help_me(message)
+                elif message.text == '/roll_the_dice':
+                    roll_the_dice(message)
                 else:
-                    raise ConvertionException('Вы не ввели число :(\nНапишите ниже, *какое количество кубиков D4* '
-                                              'бросить*.\nНапример, 3 :)')
+                    if message.text.isdigit():
+                        result = []
+                        for i in range(int(message.text)):
+                            new_digit = random.randrange(1, 4, 1)
+                            result.append(new_digit)
+                        markup.add(types.KeyboardButton('Бросить ещё раз?'))
+                        bot.send_message(message.chat.id, f'{user_name}, результат вашего броска\n\n 🎲 {result} 🎲',
+                                         reply_markup=markup)
+                        bot.register_next_step_handler(message, roll_the_dice)
+                    else:
+                        raise ConvertionException('Вы не ввели число :(\nНапишите ниже, *какое количество кубиков D4* '
+                                                  'бросить*.\nНапример, 3 :)')
+            else:
+                bot.send_message(message.chat.id, text='Вы не ввели количество кубиков, которое нужно бросить 😔\n'
+                                                       'Напишите ниже, *какое количество кубиков D4* бросить*.\n'
+                                                       'Например, 3 :)'.format(message.from_user))
+                bot.register_next_step_handler(message, throw_d4)
         except ConvertionException as e:
             bot.send_message(message.chat.id, f'{user_name}, что-то не так 🙃\n{e}', reply_markup=markup)
             bot.register_next_step_handler(message, throw_d4)
