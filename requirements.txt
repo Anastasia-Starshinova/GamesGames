@@ -9,7 +9,7 @@ certifi
 charset-normalizer 
 click              
 colorama           
-flask
+Flask
 frozenlist         
 idna               
 itsdangerous       
