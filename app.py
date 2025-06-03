@@ -8,7 +8,8 @@ import urllib.parse
 import telebot
 from telebot import types
 import os
-from flask import Flask, request
+from flask import Flask
+# from flask import Flask, request
 
 groups = []
 days_list = ['понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота', 'воскресенье']
