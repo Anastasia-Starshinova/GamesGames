@@ -45,11 +45,16 @@ def webhook():
     return '', 200
 
 
-# @app.before_request
-@app.before_serving
 def setup_webhook():
     bot.remove_webhook()
     bot.set_webhook(url=WEBHOOK_URL)
+
+
+# @app.before_request
+# @app.before_serving
+# def setup_webhook():
+#     bot.remove_webhook()
+#     bot.set_webhook(url=WEBHOOK_URL)
 
 
 if __name__ == "__main__":
