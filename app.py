@@ -32,16 +32,22 @@ app = Flask(__name__)
 TOKEN = os.getenv("BOT_TOKEN")
 bot = telebot.TeleBot(TOKEN)
 
-
 DATABASE_URL = os.getenv("DATABASE_URL")
+
 WEBHOOK_PATH = f"/{TOKEN}"
 WEBHOOK_URL = f"https://worker-production-4757.up.railway.app{WEBHOOK_PATH}"
 
 
+@app.before_first_request
+def setup_webhook():
+    bot.remove_webhook()
+    bot.set_webhook(url=WEBHOOK_URL)
+
+
 @app.route(WEBHOOK_PATH, methods=['POST'])
 def webhook():
-    json_string = request.get_data().decode('utf-8')
-    update = telebot.types.Update.de_json(json_string)
+    json_str = request.get_data().decode('utf-8')
+    update = telebot.types.Update.de_json(json_str)
     bot.process_new_updates([update])
     return '', 200
 
@@ -51,11 +57,11 @@ def webhook():
 #     bot.set_webhook(url=WEBHOOK_URL)
 
 
-@app.before_request
-# @app.before_serving
-def setup_webhook():
-    bot.remove_webhook()
-    bot.set_webhook(url=WEBHOOK_URL)
+# @app.before_request
+# # @app.before_serving
+# def setup_webhook():
+#     bot.remove_webhook()
+#     bot.set_webhook(url=WEBHOOK_URL)
 
 
 if __name__ == "__main__":
