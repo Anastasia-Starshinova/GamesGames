@@ -8,7 +8,7 @@ import urllib.parse
 import telebot
 from telebot import types
 import os
-
+from flask import Flask, request
 
 groups = []
 days_list = ['понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота', 'воскресенье']
@@ -3578,5 +3578,5 @@ def show_game_player(message):
 # bot.infinity_polling(skip_updates=True)
 # bot.infinity_polling()
 
-if __name__ == "__main__":
-    bot.polling(none_stop=True, skip_pending=True)
+# if __name__ == "__main__":
+#     bot.polling(none_stop=True, skip_pending=True)
