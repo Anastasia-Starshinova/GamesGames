@@ -35,7 +35,7 @@ bot = telebot.TeleBot(TOKEN)
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 WEBHOOK_PATH = f"/{TOKEN}"
-WEBHOOK_URL = f"https://my-telegram-bot.up.railway.app{WEBHOOK_PATH}"
+WEBHOOK_URL = f"https://worker-production-4757.up.railway.app{WEBHOOK_PATH}"
 
 
 @app.route(WEBHOOK_PATH, methods=['POST'])
