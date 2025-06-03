@@ -33,4 +33,3 @@ urllib3
 Werkzeug           
 yarl 
 psycopg2-binary
-flask
