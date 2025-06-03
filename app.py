@@ -46,12 +46,6 @@ def webhook():
     return '', 200
 
 
-if __name__ == "__main__":
-    bot.remove_webhook()
-    bot.set_webhook(url=WEBHOOK_URL)
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-
-
 # player_functions
 def add_player(name, data):
     conn = psycopg2.connect(DATABASE_URL)
@@ -3599,3 +3593,9 @@ def show_game_player(message):
 
 # if __name__ == "__main__":
 #     bot.polling(none_stop=True, skip_pending=True)
+
+
+if __name__ == "__main__":
+    bot.remove_webhook()
+    bot.set_webhook(url=WEBHOOK_URL)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
