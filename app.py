@@ -38,12 +38,6 @@ WEBHOOK_PATH = f"/{TOKEN}"
 WEBHOOK_URL = f"https://worker-production-4757.up.railway.app{WEBHOOK_PATH}"
 
 
-@app.before_first_request
-def setup_webhook():
-    bot.remove_webhook()
-    bot.set_webhook(url=WEBHOOK_URL)
-
-
 @app.route(WEBHOOK_PATH, methods=['POST'])
 def webhook():
     json_str = request.get_data().decode('utf-8')
@@ -52,20 +46,10 @@ def webhook():
     return '', 200
 
 
-# def setup_webhook():
-#     bot.remove_webhook()
-#     bot.set_webhook(url=WEBHOOK_URL)
-
-
-# @app.before_request
-# # @app.before_serving
-# def setup_webhook():
-#     bot.remove_webhook()
-#     bot.set_webhook(url=WEBHOOK_URL)
-
-
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
+    bot.remove_webhook()
+    bot.set_webhook(url=WEBHOOK_URL)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
 
 
 # player_functions
