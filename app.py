@@ -14,6 +14,7 @@ from flask import Flask, request
 random_word = 'kjnl'
 groups = []
 games_for_admin = []
+chats_for_admin = []
 days_list = ['понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота', 'воскресенье']
 master_schedule_buttons = ['Название', 'Система', 'Описание', 'Длительность', 'Место проведения', 'День',
                            'Время', 'Подготовка', 'Стоимость участия', 'Количество игроков', 'Дополнительно',
@@ -747,6 +748,16 @@ def add_chats_to_database(link):
     id_chat = bot.get_chat('@' + link[13:]).id
     cursor.execute(
         f'INSERT INTO chats_with_games (link, name, id_chat) VALUES ("{link}", "{name}", "{id_chat}")')
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+
+def delete_chats(chat):
+    conn = psycopg2.connect(DATABASE_URL)
+    cursor = conn.cursor()
+    cursor.execute(
+        'DELETE FROM chats_with_games WHERE name=%s ', (chat,))
     conn.commit()
     cursor.close()
     conn.close()
@@ -1814,32 +1825,35 @@ def admin_actions(message: telebot.types.Message):
     if message.chat.type == 'private':
         username = message.from_user.username
         delete_announce_game(username)
-        user_id = message.from_user.id
         user_name = message.from_user.first_name
-        user_last_name = message.from_user.last_name
         check_games_master(username)
-        number_of_games = get_data_for_master(username, 'show_games_one_master')
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
         chats = get_chats('get_name', '')
         games = get_data_for_player(username, 'show_games')
         global games_for_admin
+        global chats_for_admin
         try:
             if type(message.text) is str:
                 if message.text == '/start':
                     games_for_admin = []
+                    chats_for_admin = []
                     start(message)
                 elif message.text == '/help_me':
                     games_for_admin = []
+                    chats_for_admin = []
                     help_me(message)
                 elif message.text == '/roll_the_dice':
                     games_for_admin = []
+                    chats_for_admin = []
                     roll_the_dice(message)
                 elif message.text == 'Вернуться в главное меню':
                     games_for_admin = []
+                    chats_for_admin = []
                     back_to_main_menu_admin(message)
                     bot.register_next_step_handler(message, admin_actions)
                 else:
                     if message.text in chats:
+                        chats_for_admin.append(message.text)
                         markup.add(types.KeyboardButton('Да, хочу удалить группу 😌'),
                                    types.KeyboardButton('Вернуться в главное меню'))
                         bot.send_message(message.chat.id, text='Удалить эту группу? После удаления мастера не смогут '
@@ -1868,7 +1882,12 @@ def admin_actions(message: telebot.types.Message):
                             bot.send_message(message.chat.id, text='Удалить игру?', reply_markup=markup)
                             bot.register_next_step_handler(message, admin_actions)
                     elif message.text == 'Да, хочу удалить группу 😌':
-                        pass
+                        chat = chats_for_admin[-1]
+                        chats_for_admin = []
+                        delete_chats(chat)
+                        bot.send_message(message.chat.id, text=f'{user_name}, вы удалили группу :)')
+                        back_to_main_menu_admin(message)
+                        bot.register_next_step_handler(message, admin_actions)
                     elif message.text == 'Да, хочу удалить игру 😌':
                         game = games_for_admin[-1]
                         games_for_admin = []
