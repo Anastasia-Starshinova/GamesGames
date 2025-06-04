@@ -186,6 +186,7 @@ def copy_game_for_player(name):
     conn.close()
 
 
+# games = get_data_for_player(username, 'show_games')
 def get_data_for_player(name, argument):
     conn = psycopg2.connect(DATABASE_URL)
     cursor = conn.cursor()
@@ -200,11 +201,17 @@ def get_data_for_player(name, argument):
 
     elif argument == 'show_games':
         cursor.execute(
-            'SELECT schedule.title, schedule.master_name, schedule.master_last_name FROM schedule '
-            'WHERE master=%s', (name, ))
+            'SELECT schedule.title, schedule.master_name, schedule.master_last_name FROM schedule')
         games = cursor.fetchall()
         cursor.close()
         conn.close()
+
+        # cursor.execute(
+        #     'SELECT schedule.title, schedule.master_name, schedule.master_last_name FROM schedule '
+        #     'WHERE master=%s', (name,))
+        # games = cursor.fetchall()
+        # cursor.close()
+        # conn.close()
 
         new_result = []
         for game in games:
