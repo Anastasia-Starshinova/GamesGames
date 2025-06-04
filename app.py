@@ -1576,7 +1576,8 @@ def throw_d20(message: telebot.types.Message):
             else:
                 bot.send_message(message.chat.id, text='Вы не ввели количество кубиков, которое нужно бросить 😔\n'
                                                        'Напишите ниже, *какое количество кубиков D20 бросить*.\n'
-                                                       'Например, 3 :)'.format(message.from_user))
+                                                       'Например, 3 :)'.format(message.from_user),
+                                 parse_mode='Markdown')
                 bot.register_next_step_handler(message, throw_d20)
         except ConvertionException as e:
             bot.send_message(message.chat.id, f'{user_name}, что-то не так 🙃\n{e}', parse_mode='Markdown',
@@ -1612,7 +1613,8 @@ def throw_d12(message: telebot.types.Message):
             else:
                 bot.send_message(message.chat.id, text='Вы не ввели количество кубиков, которое нужно бросить 😔\n'
                                                        'Напишите ниже, *какое количество кубиков D12 бросить*.\n'
-                                                       'Например, 3 :)'.format(message.from_user))
+                                                       'Например, 3 :)'.format(message.from_user),
+                                 parse_mode='Markdown')
                 bot.register_next_step_handler(message, throw_d12)
         except ConvertionException as e:
             bot.send_message(message.chat.id, f'{user_name}, что-то не так 🙃\n{e}', parse_mode='Markdown',
@@ -1648,7 +1650,8 @@ def throw_d10(message: telebot.types.Message):
             else:
                 bot.send_message(message.chat.id, text='Вы не ввели количество кубиков, которое нужно бросить 😔\n'
                                                        'Напишите ниже, *какое количество кубиков D10 бросить*.\n'
-                                                       'Например, 3 :)'.format(message.from_user))
+                                                       'Например, 3 :)'.format(message.from_user),
+                                 parse_mode='Markdown')
                 bot.register_next_step_handler(message, throw_d10)
         except ConvertionException as e:
             bot.send_message(message.chat.id, f'{user_name}, что-то не так 🙃\n{e}', parse_mode='Markdown',
@@ -1684,7 +1687,8 @@ def throw_d8(message: telebot.types.Message):
             else:
                 bot.send_message(message.chat.id, text='Вы не ввели количество кубиков, которое нужно бросить 😔\n'
                                                        'Напишите ниже, *какое количество кубиков D8 бросить*.\n'
-                                                       'Например, 3 :)'.format(message.from_user))
+                                                       'Например, 3 :)'.format(message.from_user),
+                                 parse_mode='Markdown')
                 bot.register_next_step_handler(message, throw_d8)
         except ConvertionException as e:
             bot.send_message(message.chat.id, f'{user_name}, что-то не так 🙃\n{e}', parse_mode='Markdown',
@@ -1720,7 +1724,8 @@ def throw_d6(message: telebot.types.Message):
             else:
                 bot.send_message(message.chat.id, text='Вы не ввели количество кубиков, которое нужно бросить 😔\n'
                                                        'Напишите ниже, *какое количество кубиков D6 бросить*.\n'
-                                                       'Например, 3 :)'.format(message.from_user))
+                                                       'Например, 3 :)'.format(message.from_user),
+                                 parse_mode='Markdown')
                 bot.register_next_step_handler(message, throw_d6)
         except ConvertionException as e:
             bot.send_message(message.chat.id, f'{user_name}, что-то не так 🙃\n{e}', parse_mode='Markdown',
@@ -1756,7 +1761,8 @@ def throw_d4(message: telebot.types.Message):
             else:
                 bot.send_message(message.chat.id, text='Вы не ввели количество кубиков, которое нужно бросить 😔\n'
                                                        'Напишите ниже, *какое количество кубиков D4 бросить*.\n'
-                                                       'Например, 3 :)'.format(message.from_user))
+                                                       'Например, 3 :)'.format(message.from_user),
+                                 parse_mode='Markdown')
                 bot.register_next_step_handler(message, throw_d4)
         except ConvertionException as e:
             bot.send_message(message.chat.id, f'{user_name}, что-то не так 🙃\n{e}', parse_mode='Markdown',
