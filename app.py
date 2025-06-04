@@ -466,7 +466,7 @@ def check_free_places(username, game):
         conn = psycopg2.connect(DATABASE_URL)
         cursor = conn.cursor()
         cursor.execute(
-            'UPDATE players SET game=%s WHERE game=%s AND player=%s', (game, '-', username))
+            'UPDATE players SET game=%s WHERE game=%s AND player=%s', (game, 'RR', username))
         conn.commit()
         cursor.close()
         conn.close()
@@ -513,7 +513,7 @@ def check_free_places(username, game):
             conn = psycopg2.connect(DATABASE_URL)
             cursor = conn.cursor()
             cursor.execute(
-                'UPDATE players SET game=%s WHERE game=%s AND player=%s', (game, '-', username))
+                'UPDATE players SET game=%s WHERE game=%s AND player=%s', (game, 'RR', username))
             conn.commit()
             cursor.close()
             conn.close()
@@ -553,7 +553,7 @@ def check_free_places(username, game):
                 conn = psycopg2.connect(DATABASE_URL)
                 cursor = conn.cursor()
                 cursor.execute(
-                    'UPDATE players SET game=%s WHERE game=%s AND player=%s', (game, '-', username))
+                    'UPDATE players SET game=%s WHERE game=%s AND player=%s', (game, 'RR', username))
                 conn.commit()
                 cursor.close()
                 conn.close()
@@ -589,7 +589,7 @@ def check_free_places(username, game):
                 conn = psycopg2.connect(DATABASE_URL)
                 cursor = conn.cursor()
                 cursor.execute(
-                    'UPDATE players SET game=%s WHERE game=%s AND player=%s', (game, '-', username))
+                    'UPDATE players SET game=%s WHERE game=%s AND player=%s', (game, 'RR', username))
                 conn.commit()
                 cursor.close()
                 conn.close()
@@ -629,7 +629,7 @@ def check_free_places(username, game):
                 conn = psycopg2.connect(DATABASE_URL)
                 cursor = conn.cursor()
                 cursor.execute(
-                    'UPDATE players SET game=%s WHERE game=%s AND player=%s', (game, '-', username))
+                    'UPDATE players SET game=%s WHERE game=%s AND player=%s', (game, 'RR', username))
                 conn.commit()
                 cursor.close()
                 conn.close()
@@ -669,7 +669,7 @@ def check_free_places(username, game):
                 conn = psycopg2.connect(DATABASE_URL)
                 cursor = conn.cursor()
                 cursor.execute(
-                    'UPDATE players SET game=%s WHERE game=%s AND player=%s', (game, '-', username))
+                    'UPDATE players SET game=%s WHERE game=%s AND player=%s', (game, 'RR', username))
                 conn.commit()
                 cursor.close()
                 conn.close()
