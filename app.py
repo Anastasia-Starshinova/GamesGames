@@ -13,6 +13,7 @@ from flask import Flask, request
 
 random_word = 'kjnl'
 groups = []
+games_for_admin = []
 days_list = ['понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота', 'воскресенье']
 master_schedule_buttons = ['Название', 'Система', 'Описание', 'Длительность', 'Место проведения', 'День',
                            'Время', 'Подготовка', 'Стоимость участия', 'Количество игроков', 'Дополнительно',
@@ -56,6 +57,7 @@ def add_player(name, data):
     conn.commit()
     cursor.close()
     conn.close()
+# add_player(username, '-')
 
 
 def delete_in_schedule(player, game, text):
@@ -132,7 +134,8 @@ def delete_player(username):
     conn.commit()
     cursor.close()
     conn.close()
-    delete_in_schedule(username, '-', 'SELECT schedule.id, schedule.players FROM schedule WHERE players !=%s')
+    delete_in_schedule(username, '-', 'SELECT schedule.id, schedule.players FROM schedule WHERE '
+                                      'players !=%s')
 
 
 def main_menu_player(message):
@@ -415,6 +418,7 @@ def notify_master(player, game):
     return data
 
 
+# result = check_free_places(username, game)
 def check_free_places(username, game):
     conn = psycopg2.connect(DATABASE_URL)
     cursor = conn.cursor()
@@ -922,6 +926,20 @@ def main_menu_master(message):
     return markup
 
 
+def main_menu_admin(message):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, is_persistent=False)
+    markup.add(types.KeyboardButton('Добавить группу для анонсов :)'),
+               types.KeyboardButton('Список групп'),
+               types.KeyboardButton('Список игр'),
+               types.KeyboardButton('Вернуться в главное меню'))
+    return markup
+
+
+def back_to_main_menu_admin(message):
+    result = main_menu_admin(message)
+    bot.send_message(message.chat.id, text='Выберите, что хотите сделать :)', reply_markup=result)
+
+
 def btn_back_to_main_menu(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     markup.add(types.KeyboardButton('Вернуться в главное меню'))
@@ -973,51 +991,105 @@ def copy_game(data, name):
     conn.close()
 
 
-def delete_game(name):
-    conn = psycopg2.connect(DATABASE_URL)
-    cursor = conn.cursor()
-    cursor.execute(
-        'SELECT schedule.id FROM schedule WHERE master=%s', (name,))
-    result = cursor.fetchall()
-    cursor.close()
-    conn.close()
-
-    masters_id = [elem[0] for elem in result]
-    masters_id.sort()
-    master_id = int(masters_id[-1])
-
-    conn = psycopg2.connect(DATABASE_URL)
-    cursor = conn.cursor()
-    cursor.execute(
-        'SELECT schedule.title FROM schedule WHERE id=%s', (int(master_id),))
-    title = cursor.fetchall()[0][0]
-    cursor.close()
-    conn.close()
-
-    conn = psycopg2.connect(DATABASE_URL)
-    cursor = conn.cursor()
-    cursor.execute(
-        'SELECT players.game FROM players WHERE game=%s', (title, ))
-    games = cursor.fetchall()
-    cursor.close()
-    conn.close()
-
-    if len(games) != 0:
+def delete_game(name, argument):
+    if argument == 'master':
         conn = psycopg2.connect(DATABASE_URL)
         cursor = conn.cursor()
         cursor.execute(
-            'DELETE FROM players WHERE game=%s ', (title,))
+            'SELECT schedule.id FROM schedule WHERE master=%s', (name,))
+        result = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        masters_id = [elem[0] for elem in result]
+        masters_id.sort()
+        master_id = int(masters_id[-1])
+
+        conn = psycopg2.connect(DATABASE_URL)
+        cursor = conn.cursor()
+        cursor.execute(
+            'SELECT schedule.title FROM schedule WHERE id=%s', (int(master_id),))
+        title = cursor.fetchall()[0][0]
+        cursor.close()
+        conn.close()
+
+        conn = psycopg2.connect(DATABASE_URL)
+        cursor = conn.cursor()
+        cursor.execute(
+            'SELECT players.game FROM players WHERE game=%s', (title, ))
+        games = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        if len(games) != 0:
+            conn = psycopg2.connect(DATABASE_URL)
+            cursor = conn.cursor()
+            cursor.execute(
+                'DELETE FROM players WHERE game=%s ', (title,))
+            conn.commit()
+            cursor.close()
+            conn.close()
+
+        conn = psycopg2.connect(DATABASE_URL)
+        cursor = conn.cursor()
+        cursor.execute(
+            'DELETE FROM schedule WHERE id=%s ', (int(master_id),))
         conn.commit()
         cursor.close()
         conn.close()
 
-    conn = psycopg2.connect(DATABASE_URL)
-    cursor = conn.cursor()
-    cursor.execute(
-        'DELETE FROM schedule WHERE id=%s ', (int(master_id),))
-    conn.commit()
-    cursor.close()
-    conn.close()
+        # delete_game(game, 'admin')
+    elif argument == 'admin':
+        conn = psycopg2.connect(DATABASE_URL)
+        cursor = conn.cursor()
+        cursor.execute(
+            'DELETE FROM schedule WHERE title=%s ', (name, ))
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+
+
+
+
+
+
+        conn = psycopg2.connect(DATABASE_URL)
+        cursor = conn.cursor()
+        cursor.execute(
+            'SELECT schedule.id FROM schedule WHERE master=%s', (name,))
+        result = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        masters_id = [elem[0] for elem in result]
+        masters_id.sort()
+        master_id = int(masters_id[-1])
+
+        conn = psycopg2.connect(DATABASE_URL)
+        cursor = conn.cursor()
+        cursor.execute(
+            'SELECT schedule.title FROM schedule WHERE id=%s', (int(master_id),))
+        title = cursor.fetchall()[0][0]
+        cursor.close()
+        conn.close()
+
+        conn = psycopg2.connect(DATABASE_URL)
+        cursor = conn.cursor()
+        cursor.execute(
+            'SELECT players.game FROM players WHERE game=%s', (title,))
+        games = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        if len(games) != 0:
+            conn = psycopg2.connect(DATABASE_URL)
+            cursor = conn.cursor()
+            cursor.execute(
+                'DELETE FROM players WHERE game=%s ', (title,))
+            conn.commit()
+            cursor.close()
+            conn.close()
 
 
 def check_buttons(name):
@@ -1369,11 +1441,11 @@ def start(message: telebot.types.Message):
                 delete_announce_game(username)
                 markup.add(types.KeyboardButton('Я — мастер :)'),
                            types.KeyboardButton('Я — игрок :)'),
-                           types.KeyboardButton('Добавить группу для анонсов :)'))
+                           types.KeyboardButton('Я — администратор :)'))
                 bot.send_message(message.chat.id, text="Привет, {0.first_name}! Решите, как хотите "
                                                        "использовать этот бот :)".format(message.from_user),
                                  reply_markup=markup)
-                bot.register_next_step_handler(message, player_master_chats)
+                bot.register_next_step_handler(message, player_master_admin)
             else:
                 delete_announce_game(username)
                 markup.add(types.KeyboardButton('Я — мастер :)'),
@@ -1381,7 +1453,7 @@ def start(message: telebot.types.Message):
                 bot.send_message(message.chat.id, text="Привет, {0.first_name}! Решите, как хотите "
                                                        "использовать этот бот :)".format(message.from_user),
                                  reply_markup=markup)
-                bot.register_next_step_handler(message, player_master_chats)
+                bot.register_next_step_handler(message, player_master_admin)
 
 
 @bot.message_handler(commands=['help_me', ])
@@ -1435,7 +1507,7 @@ def handle_error(message):
                      .format(message.from_user), parse_mode='Markdown')
 
 
-def player_master_chats(message):
+def player_master_admin(message):
     if message.chat.type == 'private':
         username = message.from_user.username
         user_name = message.from_user.first_name
@@ -1451,12 +1523,11 @@ def player_master_chats(message):
                 else:
                     if message.text == 'Я — мастер :)':
                         check_games_master(username)
-                        result = main_menu_master(message)
+                        main_menu = main_menu_master(message)
                         bot.send_message(message.chat.id,
                                          text='{0.first_name}, выберите, что хотите сделать :)'.
-                                         format(message.from_user), reply_markup=result, )
+                                         format(message.from_user), reply_markup=main_menu, )
                         bot.register_next_step_handler(message, master_actions)
-
                     elif message.text == 'Я — игрок :)':
                         check_games_player(username)
                         main_menu = main_menu_player(message)
@@ -1464,13 +1535,12 @@ def player_master_chats(message):
                                          text='{0.first_name}, выберите, что хотите сделать :)'.
                                          format(message.from_user), reply_markup=main_menu)
                         bot.register_next_step_handler(message, player_actions)
-                    elif message.text == 'Добавить группу для анонсов :)':
-                        bot.send_message(message.chat.id, text='Убедитесь, что группа, которую вы хотите добавить, '
-                                                               'публичная и что этот бот в ней состоит.\nЕсли не '
-                                                               'состоит, то попросите админов группы добавить бота :)'
-                                                               '\nСкопируйте ссылку на группу и вставьте ниже :)'
-                                         .format(message.from_user))
-                        bot.register_next_step_handler(message, write_chats)
+                    elif message.text == 'Я — администратор :)':
+                        main_menu = main_menu_admin(message)
+                        bot.send_message(message.chat.id,
+                                         text='{0.first_name}, выберите, что хотите сделать :)'.
+                                         format(message.from_user), reply_markup=main_menu)
+                        bot.register_next_step_handler(message, admin_actions)
                     else:
                         raise ConvertionException('Выберите из нескольких вариантов на кнопках :)".\n—\n'
                                                   'Или выберите нужную команду в синей плашке меню :)')
@@ -1486,7 +1556,7 @@ def player_master_chats(message):
                 bot.send_message(message.chat.id, text='Нужно выбрать вариант, указанный на кнопках 😌\n—\nИли '
                                                        'выберите нужную команду в синей плашке меню :)'.
                                  format(message.from_user), reply_markup=markup)
-                bot.register_next_step_handler(message, player_master_chats)
+                bot.register_next_step_handler(message, player_master_admin)
 
         except ConvertionException as e:
             delete_announce_game(username)
@@ -1495,11 +1565,11 @@ def player_master_chats(message):
                 markup.add(types.KeyboardButton('Я — мастер :)'), types.KeyboardButton('Я — игрок :)'),
                            types.KeyboardButton('Добавить группу для анонсов :)'))
                 bot.send_message(message.chat.id, f'{user_name}, что-то не так 🙃\n{e}', reply_markup=markup)
-                bot.register_next_step_handler(message, player_master_chats)
+                bot.register_next_step_handler(message, player_master_admin)
             else:
                 markup.add(types.KeyboardButton('Я — мастер :)'), types.KeyboardButton('Я — игрок :)'))
                 bot.send_message(message.chat.id, f'{user_name}, что-то не так 🙃\n{e}', reply_markup=markup)
-                bot.register_next_step_handler(message, player_master_chats)
+                bot.register_next_step_handler(message, player_master_admin)
 
 
 def throw(message: telebot.types.Message):
@@ -1770,6 +1840,125 @@ def throw_d4(message: telebot.types.Message):
             bot.register_next_step_handler(message, throw_d4)
 
 
+def admin_actions(message: telebot.types.Message):
+    if message.chat.type == 'private':
+        username = message.from_user.username
+        delete_announce_game(username)
+        user_id = message.from_user.id
+        user_name = message.from_user.first_name
+        user_last_name = message.from_user.last_name
+        check_games_master(username)
+        number_of_games = get_data_for_master(username, 'show_games_one_master')
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+        chats = get_chats('get_name', '')
+        games = get_data_for_player(username, 'show_games')
+        global games_for_admin
+        try:
+            if type(message.text) is str:
+                if message.text == '/start':
+                    games_for_admin = []
+                    start(message)
+                elif message.text == '/help_me':
+                    games_for_admin = []
+                    help_me(message)
+                elif message.text == '/roll_the_dice':
+                    games_for_admin = []
+                    roll_the_dice(message)
+                elif message.text == 'Вернуться в главное меню':
+                    games_for_admin = []
+                    back_to_main_menu_admin(message)
+                    bot.register_next_step_handler(message, admin_actions)
+                else:
+                    if message.text in chats:
+                        markup.add(types.KeyboardButton('Да, хочу удалить группу 😌'),
+                                   types.KeyboardButton('Вернуться в главное меню'))
+                        bot.send_message(message.chat.id, text='Удалить эту группу? После удаления мастера не смогут '
+                                                               'анонсировать там свои игры :('
+                                         .format(message.from_user), reply_markup=markup)
+                        bot.register_next_step_handler(message, admin_actions)
+                    elif message.text in games:
+                        indexes = []
+                        for i in range(len(message.text)):
+                            if message.text[i] == '"':
+                                indexes.append(i)
+                        first = indexes[0] + 1
+                        game = message.text[first:indexes[1]]
+                        games_for_admin.append(game)
+                        answer = get_data_for_player(game, 'show_concrete_game')
+                        markup.add(types.KeyboardButton('Да, хочу удалить игру 😌'),
+                                   types.KeyboardButton('Вернуться в главное меню'))
+                        if type(answer) is list:
+                            photo = answer[0]
+                            text = answer[1]
+                            bot.send_photo(message.chat.id, photo, text, parse_mode='Markdown')
+                            bot.send_message(message.chat.id, text='Удалить игру?', reply_markup=markup)
+                            bot.register_next_step_handler(message, admin_actions)
+                        else:
+                            bot.send_message(message.chat.id, answer, parse_mode='Markdown')
+                            bot.send_message(message.chat.id, text='Удалить игру?', reply_markup=markup)
+                            bot.register_next_step_handler(message, admin_actions)
+                    elif message.text == 'Да, хочу удалить группу 😌':
+                        pass
+                    elif message.text == 'Да, хочу удалить игру 😌':
+                        game = games_for_admin[-1]
+                        games_for_admin = []
+                        delete_game(game, 'admin')
+                        bot.send_message(message.chat.id, text=f'{user_name}, вы удалили игру :)')
+                        back_to_main_menu_admin(message)
+                        bot.register_next_step_handler(message, admin_actions)
+                    elif message.text == 'Добавить группу для анонсов :)':
+                        bot.send_message(message.chat.id, text='Убедитесь, что группа, которую вы хотите добавить, '
+                                                               'публичная и что этот бот в ней состоит.\nЕсли не '
+                                                               'состоит, то попросите админов группы добавить бота :)'
+                                                               '\nСкопируйте ссылку на группу и вставьте ниже :)'
+                                         .format(message.from_user))
+                        bot.register_next_step_handler(message, write_chats)
+                    elif message.text == 'Список групп':
+                        if len(chats) == 0:
+                            main_menu = main_menu_admin(message)
+                            bot.send_message(message.chat.id, text=f'{user_name}, здесь пока нет чатов с играми :(')
+                            bot.send_message(message.chat.id, text='{0.first_name}, выберите, что хотите сделать :)'
+                                             .format(message.from_user), reply_markup=main_menu, )
+                            bot.register_next_step_handler(message, admin_actions)
+                        else:
+                            for chat in chats:
+                                markup.add(chat)
+                            markup.add('Вернуться в главное меню')
+                            bot.send_message(message.chat.id,
+                                             text=f'{user_name}, если вы хотите удалить группу из списка, то нажмите '
+                                                  f'на эту группу :)', reply_markup=markup)
+                            bot.register_next_step_handler(message, admin_actions)
+                    elif message.text == 'Список игр':
+                        if len(games) == 0:
+                            bot.send_message(message.chat.id, text='Мастера ещё не выложили своё расписание😔\n'
+                                                                   'Посмотрите немного позже 👀')
+                            back_to_main_menu_admin(message)
+                            bot.register_next_step_handler(message, admin_actions)
+                        else:
+                            for game in games:
+                                markup.add(types.KeyboardButton(game))
+                            markup.add(types.KeyboardButton('Вернуться в главное меню'))
+                            bot.send_message(message.chat.id, text="{0.first_name}, выберите игру, которую хотите "
+                                                                   "посмотреть :)".format(message.from_user),
+                                             reply_markup=markup)
+                            bot.register_next_step_handler(message, admin_actions)
+                    else:
+                        raise ConvertionException('Выберите один из вариантов, представленных ниже :)\n—\n'
+                                                  'Или выберите нужную команду в синей плашке меню :)')
+            else:
+                result = main_menu_admin(message)
+                bot.send_message(message.chat.id,
+                                 text='{0.first_name}, выберите один из вариантов, представленных ниже :)\n—\nИли '
+                                      'выберите нужную команду в синей плашке меню :)'.format(message.from_user),
+                                 reply_markup=result)
+                bot.register_next_step_handler(message, admin_actions)
+
+        except ConvertionException as e:
+            result = main_menu_admin(message)
+            bot.send_message(message.chat.id, f'{user_name}, что-то не так 🙃\n{e}', reply_markup=result)
+            bot.register_next_step_handler(message, admin_actions)
+
+
 def write_chats(message):
     if message.chat.type == 'private':
         user_name = message.from_user.first_name
@@ -1783,8 +1972,8 @@ def write_chats(message):
                 elif message.text == '/roll_the_dice':
                     roll_the_dice(message)
                 elif message.text == 'Вернуться в главное меню':
-                    back_to_main_menu(message)
-                    bot.register_next_step_handler(message, master_actions)
+                    back_to_main_menu_admin(message)
+                    bot.register_next_step_handler(message, admin_actions)
                 else:
                     if message.text[0:13] == 'https://t.me/' or message.text[0:5] == 't.me/':
                         if message.text[0:5] == 't.me/':
@@ -1802,10 +1991,9 @@ def write_chats(message):
                                 bot.register_next_step_handler(message, write_chats)
                             elif check_bot_group_membership(TOKEN, id_group):
                                 add_chats_to_database(link)
-                                bot.send_message(message.chat.id, text="Группа добавлена! Теперь вы можете "
-                                                                       "анонсировать свои игры в ней при помощи бота:)"
-                                                                       "\nВернитесь в начало для дальнейшей работы "
-                                                                       "с ботом :)".
+                                bot.send_message(message.chat.id, text="Группа добавлена! Теперь пользователи смогут "
+                                                                       "анонсировать свои игры :)\nВернитесь в начало "
+                                                                       "для дальнейшей работы с ботом :)".
                                                  format(message.from_user), reply_markup=btn_back)
                                 bot.register_next_step_handler(message, write_chats)
                         elif check_replay_links(link):
@@ -3143,7 +3331,7 @@ def delete_game_master(message):
                     roll_the_dice(message)
                 else:
                     if message.text == 'ДА':
-                        delete_game(username)
+                        delete_game(username, 'master')
                         bot.send_message(message.chat.id, text='Вы удалили игру!')
                         bot.send_message(message.chat.id, text='Выберите, что хотите сделать :)', reply_markup=main_menu)
                         bot.register_next_step_handler(message, master_actions)
@@ -3196,7 +3384,7 @@ def player_actions(message):
                                                   'позже 👀', reply_markup=btn_menu_player)
                             bot.register_next_step_handler(message, player_actions)
                         else:
-                            add_player(username, None)
+                            add_player(username, 'RR')
                             for game in games:
                                 markup.add(types.KeyboardButton(game))
                             markup.add(types.KeyboardButton('Вернуться в главное меню'))
@@ -3214,9 +3402,8 @@ def player_actions(message):
                         else:
                             markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
                             for i in range(len(games)):
-                                if games[i] is not None:
-                                    btn = types.KeyboardButton('🎲 ' + games[i] + ' 🎲')
-                                    markup.add(btn)
+                                btn = types.KeyboardButton('🎲 ' + games[i] + ' 🎲')
+                                markup.add(btn)
                             markup.add(types.KeyboardButton('Вернуться в главное меню'))
                             bot.send_message(message.chat.id,
                                              text='Выберите игру, от участия в которой хотите отписаться :)',
@@ -3232,9 +3419,8 @@ def player_actions(message):
                         else:
                             markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
                             for i in range(len(games)):
-                                if games[i] is not None:
-                                    btn = types.KeyboardButton('🎲 ' + games[i] + ' 🎲')
-                                    markup.add(btn)
+                                btn = types.KeyboardButton('🎲 ' + games[i] + ' 🎲')
+                                markup.add(btn)
                             markup.add(types.KeyboardButton('Вернуться в главное меню'))
                             bot.send_message(message.chat.id,
                                              text='Выберите игру, расписание которой вы хотите посмотреть :)',
@@ -3248,16 +3434,16 @@ def player_actions(message):
                         check_games_player(username)
                         main_menu = main_menu_player(message)
                         bot.send_message(message.chat.id,
-                                         text='{0.first_name}, выберите, что хотите сделать :)'.format(message.from_user),
-                                         reply_markup=main_menu)
+                                         text='{0.first_name}, выберите, что хотите сделать :)'.
+                                         format(message.from_user), reply_markup=main_menu)
                         bot.register_next_step_handler(message, player_actions)
                     elif message.text == 'Удалиться из бота':
                         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
                         markup.add(types.KeyboardButton('Да, хочу удалиться, надоело всё уже 😐'),
                                    types.KeyboardButton('Нет, я передумал! Я остаюсь 😉'))
                         bot.send_message(message.chat.id,
-                                         text='{0.first_name}, вы точно хотите удалиться из бота?\nТогда все ваши записи '
-                                              'тоже удалятся :('.format(message.from_user), reply_markup=markup)
+                                         text='{0.first_name}, вы точно хотите удалиться из бота?\nТогда все ваши '
+                                              'записи тоже удалятся :('.format(message.from_user), reply_markup=markup)
                         bot.register_next_step_handler(message, player_actions)
                     else:
                         raise ConvertionException('Выберите один из вариантов, представленных ниже :)\n—\n'
@@ -3301,7 +3487,6 @@ def player_schedule(message):
                         game = message.text[first:indexes[1]]
                         copy_game_for_player(game)
                         answer = get_data_for_player(game, 'show_concrete_game')
-                        # p
                         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True,
                                                            is_persistent=False)
                         markup.add(types.KeyboardButton('Записаться на игру'),
@@ -3321,7 +3506,6 @@ def player_schedule(message):
                             bot.send_photo(message.chat.id, photo, text, parse_mode='Markdown', reply_markup=markup)
                             bot.register_next_step_handler(message, make_appointment)
                         else:
-                            print('ПРИШЛИ В ELSE')
                             print(answer)
                             # text = ''
                             # for word in answer:
@@ -3588,7 +3772,6 @@ def show_game_player(message):
                                                            is_persistent=False)
                         markup.add(types.KeyboardButton('Отписаться от этой игры'),
                                    types.KeyboardButton('Вернуться в главное меню'))
-
                         if len(answer) == 2:
                             photo = answer[0]
                             text = answer[1]
@@ -3609,18 +3792,15 @@ def show_game_player(message):
                                     text += f'*{word}*\n{answer.get(word)}\n\n'
                             bot.send_message(message.chat.id, text, parse_mode='Markdown', reply_markup=markup)
                             bot.register_next_step_handler(message, delete_game_player)
-
                     else:
-                        raise ConvertionException('Выберите игру, расписание которой хотели бы посмотреть или вернитесь '
-                                                  'в главное меню :)\n—\nИли выберите нужную команду в синей плашке меню '
-                                                  ':)')
-
+                        raise ConvertionException('Выберите игру, расписание которой хотели бы посмотреть или '
+                                                  'вернитесь в главное меню :)\n—\nИли выберите нужную команду в '
+                                                  'синей плашке меню :)')
             else:
                 markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
                 for i in range(len(games)):
-                    if games[i] is not None:
-                        btn = types.KeyboardButton('🎲 ' + games[i] + ' 🎲')
-                        markup.add(btn)
+                    btn = types.KeyboardButton('🎲 ' + games[i] + ' 🎲')
+                    markup.add(btn)
                 markup.add(types.KeyboardButton('Вернуться в главное меню'))
                 bot.send_message(message.chat.id, text='Выберите игру, расписание которой хотели бы посмотреть или '
                                                        'вернитесь в главное меню :)\n—\nИли выберите нужную команду '
@@ -3630,19 +3810,11 @@ def show_game_player(message):
         except ConvertionException as e:
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
             for i in range(len(games)):
-                if games[i] is not None:
-                    btn = types.KeyboardButton('🎲 ' + games[i] + ' 🎲')
-                    markup.add(btn)
+                btn = types.KeyboardButton('🎲 ' + games[i] + ' 🎲')
+                markup.add(btn)
             markup.add(types.KeyboardButton('Вернуться в главное меню'))
             bot.send_message(message.chat.id, f'{user_name}, что-то не так 🙃\n{e}', reply_markup=markup)
             bot.register_next_step_handler(message, show_game_player)
-
-
-#
-# if __name__ == "__main__":
-#     bot.remove_webhook()
-#     bot.set_webhook(url=WEBHOOK_URL)
-#     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
 
 
 if __name__ == "__main__":
