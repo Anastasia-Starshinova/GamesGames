@@ -186,7 +186,6 @@ def copy_game_for_player(name):
     conn.close()
 
 
-# games = get_data_for_player(username, 'show_games')
 def get_data_for_player(name, argument):
     conn = psycopg2.connect(DATABASE_URL)
     cursor = conn.cursor()
@@ -205,13 +204,6 @@ def get_data_for_player(name, argument):
         games = cursor.fetchall()
         cursor.close()
         conn.close()
-
-        # cursor.execute(
-        #     'SELECT schedule.title, schedule.master_name, schedule.master_last_name FROM schedule '
-        #     'WHERE master=%s', (name,))
-        # games = cursor.fetchall()
-        # cursor.close()
-        # conn.close()
 
         new_result = []
         for game in games:
@@ -3383,7 +3375,6 @@ def player_actions(message):
                                                   'позже 👀', reply_markup=btn_menu_player)
                             bot.register_next_step_handler(message, player_actions)
                         else:
-                            add_player(username, 'default')
                             for game in games:
                                 markup.add(types.KeyboardButton(game))
                             markup.add(types.KeyboardButton('Вернуться в главное меню'))
@@ -3494,25 +3485,9 @@ def player_schedule(message):
                         if type(answer) is list:
                             photo = answer[0]
                             text = answer[1]
-                            # new_text = ''
-                            # for word in text:
-                            #     if word == 'Мастер':
-                            #         new_text += f'*{word}*\n@{text.get(word)}\n\n'
-                            #     else:
-                            #         new_text += f'*{word}*\n{text.get(word)}\n\n'
-
-                            # bot.send_photo(message.chat.id, photo, text, reply_markup=markup)
                             bot.send_photo(message.chat.id, photo, text, parse_mode='Markdown', reply_markup=markup)
                             bot.register_next_step_handler(message, make_appointment)
                         else:
-                            print(answer)
-                            # text = ''
-                            # for word in answer:
-                            #     if word == 'Мастер':
-                            #         text += f'*{word}*\n@{answer.get(word)}\n\n'
-                            #     else:
-                            #         text += f'*{word}*\n{answer.get(word)}\n\n'
-
                             bot.send_message(message.chat.id, answer, parse_mode='Markdown', reply_markup=markup)
                             bot.register_next_step_handler(message, make_appointment)
 
@@ -3556,12 +3531,14 @@ def make_appointment(message):
                         back_to_main_menu_player(message)
                         bot.register_next_step_handler(message, player_actions)
                     elif message.text == 'Записаться на игру':
+                        add_player(username, 'default')
                         answer = get_data_for_player(username, 'show_last_game_for_player')
                         if type(answer) is list:
                             game = answer[1].get('Название')
                             result = check_free_places(username, game)
 
                             if result == 'Вы уже записаны на эту игру :)':
+                                check_games_player(username)
                                 main_menu = main_menu_player(message)
                                 bot.send_message(message.chat.id, text=result, reply_markup=main_menu)
                                 bot.register_next_step_handler(message, player_actions)
@@ -3570,6 +3547,7 @@ def make_appointment(message):
                                 bot.send_message(message.chat.id,
                                                  text='К сожалению, на эту игру больше не осталось свободных мест :(',
                                                  reply_markup=main_menu)
+                                check_games_player(username)
                                 bot.register_next_step_handler(message, player_actions)
                             elif result == 'Вы записались на игру':
                                 notification = notify_master(username, game)
