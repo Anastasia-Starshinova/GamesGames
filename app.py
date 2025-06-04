@@ -368,10 +368,19 @@ def unsubscribe(player):
     conn = psycopg2.connect(DATABASE_URL)
     cursor = conn.cursor()
     cursor.execute(
-        'DELETE FROM players WHERE game=%s ', (game,))
+        'DELETE FROM players WHERE player=%s ', (player,))
     conn.commit()
     cursor.close()
     conn.close()
+
+
+    # conn = psycopg2.connect(DATABASE_URL)
+    # cursor = conn.cursor()
+    # cursor.execute(
+    #     'DELETE FROM players WHERE game=%s ', (game,))
+    # conn.commit()
+    # cursor.close()
+    # conn.close()
 
     delete_in_schedule(player, game, 'SELECT schedule.id, schedule.players FROM schedule WHERE title =%s')
 
