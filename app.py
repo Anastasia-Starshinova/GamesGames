@@ -747,7 +747,10 @@ def add_chats_to_database(link):
     name = bot.get_chat('@' + link[13:]).title
     id_chat = bot.get_chat('@' + link[13:]).id
     cursor.execute(
-        f'INSERT INTO chats_with_games (link, name, id_chat) VALUES ("{link}", "{name}", "{id_chat}")')
+        f'INSERT INTO chats_with_games (link, name, id_chat) VALUES (%s, %s, %s)',
+        (link, name, id_chat))
+    # cursor.execute(
+    #     f'INSERT INTO chats_with_games (link, name, id_chat) VALUES ("{link}", "{name}", "{id_chat}")')
     conn.commit()
     cursor.close()
     conn.close()
