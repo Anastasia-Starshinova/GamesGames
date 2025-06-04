@@ -57,11 +57,8 @@ def add_player(name, data):
     conn.commit()
     cursor.close()
     conn.close()
-# add_player(username, '-')
 
 
-# delete_in_schedule(username, '-', 'SELECT schedule.id, schedule.players FROM schedule WHERE '
-#                                       'players !=%s')
 def delete_in_schedule(player, game, text):
     conn = psycopg2.connect(DATABASE_URL)
     cursor = conn.cursor()
@@ -420,7 +417,6 @@ def notify_master(player, game):
     return data
 
 
-# result = check_free_places(username, game)
 def check_free_places(username, game):
     conn = psycopg2.connect(DATABASE_URL)
     cursor = conn.cursor()
@@ -1039,8 +1035,6 @@ def delete_game(name, argument):
         conn.commit()
         cursor.close()
         conn.close()
-
-        # delete_game(game, 'admin')
     elif argument == 'admin':
         conn = psycopg2.connect(DATABASE_URL)
         cursor = conn.cursor()
@@ -1050,36 +1044,10 @@ def delete_game(name, argument):
         cursor.close()
         conn.close()
 
-
-
-
-
-
-
         conn = psycopg2.connect(DATABASE_URL)
         cursor = conn.cursor()
         cursor.execute(
-            'SELECT schedule.id FROM schedule WHERE master=%s', (name,))
-        result = cursor.fetchall()
-        cursor.close()
-        conn.close()
-
-        masters_id = [elem[0] for elem in result]
-        masters_id.sort()
-        master_id = int(masters_id[-1])
-
-        conn = psycopg2.connect(DATABASE_URL)
-        cursor = conn.cursor()
-        cursor.execute(
-            'SELECT schedule.title FROM schedule WHERE id=%s', (int(master_id),))
-        title = cursor.fetchall()[0][0]
-        cursor.close()
-        conn.close()
-
-        conn = psycopg2.connect(DATABASE_URL)
-        cursor = conn.cursor()
-        cursor.execute(
-            'SELECT players.game FROM players WHERE game=%s', (title,))
+            'SELECT players.game FROM players WHERE game=%s', (name,))
         games = cursor.fetchall()
         cursor.close()
         conn.close()
@@ -1088,7 +1056,7 @@ def delete_game(name, argument):
             conn = psycopg2.connect(DATABASE_URL)
             cursor = conn.cursor()
             cursor.execute(
-                'DELETE FROM players WHERE game=%s ', (title,))
+                'DELETE FROM players WHERE game=%s ', (name,))
             conn.commit()
             cursor.close()
             conn.close()
