@@ -466,7 +466,7 @@ def check_free_places(username, game):
         conn = psycopg2.connect(DATABASE_URL)
         cursor = conn.cursor()
         cursor.execute(
-            'UPDATE players SET game=%s WHERE game=%s AND player=%s', (game, 'RR', username))
+            'UPDATE players SET game=%s WHERE game=%s AND player=%s', (game, 'default', username))
         conn.commit()
         cursor.close()
         conn.close()
@@ -513,7 +513,7 @@ def check_free_places(username, game):
             conn = psycopg2.connect(DATABASE_URL)
             cursor = conn.cursor()
             cursor.execute(
-                'UPDATE players SET game=%s WHERE game=%s AND player=%s', (game, 'RR', username))
+                'UPDATE players SET game=%s WHERE game=%s AND player=%s', (game, 'default', username))
             conn.commit()
             cursor.close()
             conn.close()
@@ -553,7 +553,7 @@ def check_free_places(username, game):
                 conn = psycopg2.connect(DATABASE_URL)
                 cursor = conn.cursor()
                 cursor.execute(
-                    'UPDATE players SET game=%s WHERE game=%s AND player=%s', (game, 'RR', username))
+                    'UPDATE players SET game=%s WHERE game=%s AND player=%s', (game, 'default', username))
                 conn.commit()
                 cursor.close()
                 conn.close()
@@ -589,7 +589,7 @@ def check_free_places(username, game):
                 conn = psycopg2.connect(DATABASE_URL)
                 cursor = conn.cursor()
                 cursor.execute(
-                    'UPDATE players SET game=%s WHERE game=%s AND player=%s', (game, 'RR', username))
+                    'UPDATE players SET game=%s WHERE game=%s AND player=%s', (game, 'default', username))
                 conn.commit()
                 cursor.close()
                 conn.close()
@@ -629,7 +629,7 @@ def check_free_places(username, game):
                 conn = psycopg2.connect(DATABASE_URL)
                 cursor = conn.cursor()
                 cursor.execute(
-                    'UPDATE players SET game=%s WHERE game=%s AND player=%s', (game, 'RR', username))
+                    'UPDATE players SET game=%s WHERE game=%s AND player=%s', (game, 'default', username))
                 conn.commit()
                 cursor.close()
                 conn.close()
@@ -669,7 +669,7 @@ def check_free_places(username, game):
                 conn = psycopg2.connect(DATABASE_URL)
                 cursor = conn.cursor()
                 cursor.execute(
-                    'UPDATE players SET game=%s WHERE game=%s AND player=%s', (game, 'RR', username))
+                    'UPDATE players SET game=%s WHERE game=%s AND player=%s', (game, 'default', username))
                 conn.commit()
                 cursor.close()
                 conn.close()
@@ -1497,7 +1497,7 @@ def roll_the_dice(message: telebot.types.Message):
 
 
 @bot.message_handler(content_types=['text', 'photo'])
-def handle_error(message):
+def handle_edefaultor(message):
     bot.send_message(message.chat.id,
                      text='*СЛИШКОМ МНОГО БУКВ 😳😳😳*\nВозможно, вы ввели большой текст и телеграм'
                           ' автоматически разделил его на несколько частей, так как у телеграмма есть свои '
@@ -3384,7 +3384,7 @@ def player_actions(message):
                                                   'позже 👀', reply_markup=btn_menu_player)
                             bot.register_next_step_handler(message, player_actions)
                         else:
-                            add_player(username, 'RR')
+                            add_player(username, 'default')
                             for game in games:
                                 markup.add(types.KeyboardButton(game))
                             markup.add(types.KeyboardButton('Вернуться в главное меню'))
