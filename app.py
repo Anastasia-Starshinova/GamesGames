@@ -60,6 +60,8 @@ def add_player(name, data):
 # add_player(username, '-')
 
 
+# delete_in_schedule(username, '-', 'SELECT schedule.id, schedule.players FROM schedule WHERE '
+#                                       'players !=%s')
 def delete_in_schedule(player, game, text):
     conn = psycopg2.connect(DATABASE_URL)
     cursor = conn.cursor()
@@ -72,8 +74,8 @@ def delete_in_schedule(player, game, text):
     if len(players) != 0:
         players_dict = {}
         for names in players:
-            id_game = names[-1]
-            names = names[0].split()
+            id_game = names[0]
+            names = names[1].split()
             players_dict[id_game] = names
 
         for key in players_dict:
